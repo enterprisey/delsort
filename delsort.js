@@ -100,7 +100,7 @@
                                                 .attr( "id", "status" ) );
 
                         // Build a list of categories
-                        var categories = $( "#delsort select" ).val();
+                        var categories = $( "#delsort select" ).val() || [];
                         $( ".custom-delsort-field" ).each( function ( index, element ) {
                             categories.push( $( element ).val() );
                         } );
