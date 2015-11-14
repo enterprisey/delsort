@@ -1,41 +1,96 @@
 //<nowiki>
 ( function ( $, mw ) {
-    mw.loader.load( "jquery.chosen" );
-    mw.loader.load( "mediawiki.ui.input", "text/css" );
+        mw.loader.load( "jquery.chosen" );
+        mw.loader.load( "mediawiki.ui.input", "text/css" );
 
-    var delsortCategories = {
-        "Geographic": ["United States of America", "New York", "California", "United Kingdom", "England", "India", "Australia"],
-        "Arts": ["Film", "Fictional elements", "Music", "Television", "Albums and songs"],
-        "People": ["People", "Academics and educators", "Actors and filmmakers", "Authors", "Bands and musicians", "Businesspeople", "Politicians", "Sportspeople"],
-        "Technology": ["Software", "Internet", "Websites"],
-        "Miscellaneous": ["Organizations", "Football", "Martial arts", "Christianity", "Business"]
-    };
+        var delsortCategories = {
+                "Geographic": ["United States of America", "New York", "California", "United Kingdom", "England", "India", "Australia"],
+                "Arts": ["Film", "Fictional elements", "Music", "Television", "Albums and songs"],
+                "People": ["People", "Academics and educators", "Actors and filmmakers", "Authors", "Bands and musicians", "Businesspeople", "Politicians", "Sportspeople"],
+                "Technology": ["Software", "Internet", "Websites"],
+                "Miscellaneous": ["Organizations", "Football", "Martial arts", "Christianity", "Business"]
+        };
     var ADVERTISEMENT = " ([[User:APerson/delsort|delsort.js]])";
 
     if (wgPageName.indexOf('Wikipedia:Articles_for_deletion/') != -1 &&
         wgPageName.indexOf('Wikipedia:Articles_for_deletion/Log/201') == -1) {
         var portletLink = mw.util.addPortletLink('p-cactions', '#', 'Delsort', 'pt-delsort', 'Perform deletion sorting');
         $( portletLink ).click( function ( e ) {
-            e.preventDefault();
+		e.preventDefault();
 
-            // Define a function to add a new custom field, used below
-            var addCustomField = function ( e ) {
-                $( "<div>" )
-                    .insertBefore( "#delsort #sort-button" )
-                    .css( "width", "40%" )
-                    .css( "margin", "0.25em auto" )
-                    .append( $( "<input>" )
-                             .attr( "type", "text" )
-                             .addClass( "mw-ui-input mw-ui-input-inline custom-delsort-field" ) )
-                    .append( $( "<button>" )
-                             .addClass( "mw-ui-button mw-ui-destructive mw-ui-quiet" )
-                             .text( "Remove" )
-                             .click( function ( e ) {
-                                 $( this ).parent().remove();
-                             } ) );
-            }
+                // Validation for new custom fields
+                var validateCustomCat = function ( container ) {
+		    var categoryName = container.children( "input" ).first().val();
+		    $.getJSON(
+                        mw.util.wikiScript('api'),
+                        {
+                            format: 'json',
+                            action: 'query',
+                            prop: 'pageprops',
+                            titles: "Wikipedia:WikiProject Deletion sorting/" + categoryName
+                        }
+                    ).done( function ( data ) {
+                        var setStatus = function ( status ) {
+			    var text = "Not sure";
+                            var imageSrc = "https://upload.wikimedia.org/wikipedia/commons/a/ad/Question_mark_grey.png";
+                            switch( status ) {
+			    case "d":
+			        text = "Doesn't exist";
+			        imageSrc = "https://upload.wikimedia.org/wikipedia/commons/5/5f/Red_X.svg";
+			        break;
+			    case "e":
+			        text = "Exists";
+			        imageSrc = "https://upload.wikimedia.org/wikipedia/commons/1/16/Allowed.svg";
+			        break;
+                            }
+                            container.children( ".category-status" ).empty()
+			        .append( $( "<img>", { "src": imageSrc,
+					    "style": "padding: 0 5px; width: 20px; height: 20px" } ) )
+                                .append( text );
+                        }
+                        if( data && data.query && data.query.pages ) {
+                            if( data.query.pages.hasOwnProperty( "-1" ) ) {
+                                console.log( categoryName + " DOES NOT EXIST" );
+                                setStatus( "d" );
+                            } else {
+                                console.log( categoryName + " EXISTS" );
+                                setStatus( "e" );
+                            }
+                        } else {
+                            setStatus( "n" );
+                        }
+                    } );
+                }
 
-            $( "#jump-to-nav" ).after( $( "<div>" )
+                // Define a function to add a new custom field, used below
+                var addCustomField = function ( e ) {
+                        $( "<div>" )
+                            .insertBefore( "#delsort #sort-button" )
+                            .css( "width", "40%" )
+                            .css( "margin", "0.25em auto" )
+                        .append( $( "<input>" )
+                            .attr( "type", "text" )
+                            .addClass( "mw-ui-input mw-ui-input-inline custom-delsort-field" )
+                            .change( function ( e ) {
+                                validateCustomCat( $( this ).parent() );
+                            } ) )
+                        .append( $( "<span>" ).addClass( "category-status" ) )
+                        .append( " (" )
+                        .append( $( "<img>", { "src": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Crystal_128_reload.svg",
+                                               "style": "width: 15px; height: 15px; cursor: pointer" } )
+                            .click( function ( e ) {
+                                validateCustomCat( $( this ).parent() );
+                            } ) )
+                        .append( ")" )
+                        .append( $( "<button>" )
+                            .addClass( "mw-ui-button mw-ui-destructive mw-ui-quiet" )
+                            .text( "Remove" )
+                            .click( function ( e ) {
+                                $( this ).parent().remove();
+                            } ) );
+                };
+
+                $( "#jump-to-nav" ).after( $( "<div>" )
                     .attr( "id", "delsort" )
                     .css( "border", "thin solid #c5c5c5" )
                     .css( "box-shadow", "0 3px 8px rgba(0, 0, 0, .25)" )
@@ -85,30 +140,32 @@
             $( "#delsort select" ).chosen();
             $( "#delsort .chzn-container" ).css( "text-align", "left" );
 
-            // Add the button that triggers sorting
-            $( "#delsort" ).append( $( "<div>" )
-                .css( "text-align", "center" )
-                .append( $( "<button> ")
-                    .addClass( "mw-ui-button" )
-                    .addClass( "mw-ui-progressive" )
-                    .attr( "id", "sort-button" )
-                    .text( "Sort deletion discussion" )
-                    .click( function ( e ) {
+                // Add the button that triggers sorting
+                $( "#delsort" ).append( $( "<div>" )
+                    .css( "text-align", "center" )
+                    .append( $( "<button> ")
+                        .addClass( "mw-ui-button" )
+                        .addClass( "mw-ui-progressive" )
+                        .attr( "id", "sort-button" )
+                        .text( "Sort deletion discussion" )
+                        .click( function ( e ) {
 
-                        // Make a status list
-                        $( "#delsort" ).append( $( "<ul> ")
-                                                .attr( "id", "status" ) );
+                                // Make a status list
+                                $( "#delsort" ).append( $( "<ul> ")
+                            .attr( "id", "status" ) );
 
-                        // Build a list of categories
-                        var categories = $( "#delsort select" ).val() || [];
-                        $( ".custom-delsort-field" ).each( function ( index, element ) {
-                            categories.push( $( element ).val() );
-                        } );
-                        categories = categories.filter( Boolean ); // remove empty strings
-
-                        // Actually do the delsort
-                        delsortAll( categories );
-                    } ) ) );
+                                // Build a list of categories
+                                var categories = $( "#delsort select" ).val() || [];
+                                console.log("before each: " + categories);
+                                $( ".custom-delsort-field" ).each( function ( index, element ) {
+                                        categories.push( $( element ).val() );
+                                } );
+                                console.log("before filter: " + categories);
+                                categories = categories.filter( Boolean ); // remove empty strings
+								console.log("after filter: " + categories);
+                                // Actually do the delsort
+                            delsortAll( categories );
+                        } ) ) );
         } );
     }
 
@@ -129,10 +186,10 @@
 
         // Start the animation, using super-advanced techniques
         var animationInterval = setInterval( function () {
-            $( "#delsort-dots" ).text( $( "#delsort-dots" ).text() + "." );
-            if( $( "#delsort-dots" ).text().length > 3 ) {
-                $( "#delsort-dots" ).text( "" );
-            }
+                $( "#delsort-dots" ).text( $( "#delsort-dots" ).text() + "." );
+                if( $( "#delsort-dots" ).text().length > 3 ) {
+                        $( "#delsort-dots" ).text( "" );
+                }
         }, 600 );
 
         // Place (a) notification(s) on the discussion
@@ -147,23 +204,23 @@
         // When everything's done, say something
         $.when.apply( $, deferreds ).then( function () {
 
-            // We're done!
-            $( "#delsort-title" )
-                .text( "Done sorting discussion into " + titleCategory + "." );
-            showStatus( "<b>Done!</b> Discussion sorted into " + titleCategory + ". (" )
-                .append( $( "<a>" )
-                         .text( "reload" )
-                         .attr( "href", "#" )
-                         .click( function () { document.location.reload( true ); } ) )
-                .append( ")" );
-            clearInterval( animationInterval );
+                // We're done!
+                $( "#delsort-title" )
+                    .text( "Done sorting discussion into " + titleCategory + "." );
+                showStatus( "<b>Done!</b> Discussion sorted into " + titleCategory + ". (" )
+                    .append( $( "<a>" )
+                        .text( "reload" )
+                        .attr( "href", "#" )
+                        .click( function () { document.location.reload( true ); } ) )
+                    .append( ")" );
+                clearInterval( animationInterval );
         } );
     }
 
     function showStatus( newStatus ) {
         return $( "<li>" )
-            .appendTo( "#delsort ul#status" )
-            .html( newStatus );
+             .appendTo( "#delsort ul#status" )
+             .html( newStatus );
     }
 
     /*
@@ -175,7 +232,7 @@
         // Build a notification string
         var appendText = "";
         cats.forEach( function ( cat ) {
-            appendText += "\n\{\{subst:Delsort|" + cat + "|\~\~\~\~\}\}";
+                appendText += "\n\{\{subst:Delsort|" + cat + "|\~\~\~\~\}\}";
         } );
 
         // Post the notice to the discussion
@@ -206,17 +263,17 @@
         } );
         return deferred;
     }
-
+    
     /*
      * Adds a listing at the DELSORT page for the category.
      */
     function listAtDelsort( cat ) {
         var deferred = $.Deferred();
-
+        
         // Make a status element just for this category
         var statusElement = showStatus( "Listing this discussion at DELSORT/" +
-                                        cat + "..." );
-
+                                        cat + "..." ); 
+        
         // First, get the current wikitext for the DELSORT page
         var wikitext;
         $.getJSON(
@@ -233,12 +290,12 @@
             try {
                 var pageId = Object.keys(data.query.pages)[0];
                 wikitext = data.query.pages[pageId].revisions[0]['*'];
-
+                
                 statusElement.html( "Got the DELSORT/" + cat + " listing wikitext, processing..." );
-
+                
                 // Actually edit the content to include the new listing
                 var newDelsortContent = wikitext.replace('directly below this line -->', 'directly below this line -->\n\{\{' + mw.config.get('wgPageName') + '\}\}');
-
+                
                 // Then, replace the DELSORT listing with the new content
                 var listTitle = 'Wikipedia:WikiProject Deletion sorting/' + cat;
                 $.ajax( {
