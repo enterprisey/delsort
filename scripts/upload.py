@@ -3,12 +3,14 @@ upload.py: upload delsort to a wiki
 
 Run from the project root directory.
 
-Usage: python scripts/upload.py SITE ROOT USERNAME [PASSWORD]
+Usage: python scripts/upload.py SITE TARGET USERNAME [PASSWORD]
 
-Uploads the file named "delsort.js" to the page ROOT on SITE, using the acccount for USERNAME. If PASSWORD isn't specified, it will be prompted for.
+Uploads the file named "delsort.js" to the page TARGET on SITE, using the acccount for USERNAME. If PASSWORD isn't specified, it will be prompted for.
 """
+import datetime
 import getpass
 import os.path
+import re
 import sys
 
 from clint.textui import colored
@@ -23,8 +25,8 @@ API_PAGES = {"enwiki": "https://en.wikipedia.org/w/api.php",
 HEADER = "/* Uploaded from the Git repo @ {} (branch {}) */\n"
 SUMMARY = "Updating delsort: {} @ {}"
 
-if len(sys.argv) < 3:
-    prompt.yellow("Incorrect number of arguments supplied.")
+if len(sys.argv) < 4:
+    print(colored.yellow("Incorrect number of arguments supplied."))
     print(USAGE)
     sys.exit(1)
 
@@ -34,8 +36,8 @@ if "--help" in sys.argv:
 
 site_name = sys.argv[1]
 if not site_name in API_PAGES:
-    prompt.yellow("Unrecognized wiki '%s'. Must be 'enwiki' or" +
-                  " 'testwiki'" % site_name)
+    print(colored.yellow("Unrecognized wiki '%s'. Must be 'enwiki' or" +
+                  " 'testwiki'" % site_name))
     sys.exit(1)
 site = wiki.Wiki(API_PAGES[site_name])
 
@@ -50,14 +52,14 @@ else:
 
 login_result = site.login(username, password)
 if not login_result:
-    prompt.yellow("Error logging in.")
+    print(colored.yellow("Error logging in."))
     sys.exit(1)
 else:
     print("Successfully logged in.")
 target = page.Page(site, title=root)
 
 if not os.path.isfile("delsort.js"):
-    prompt.yellow("Couldn't find a file called 'delsort.js' in the project home.")
+    print(colored.yellow("Couldn't find a file called 'delsort.js' in the project home."))
     sys.exit(1)
 
 repo = git.Repo(os.getcwd())
@@ -65,6 +67,20 @@ branch = repo.active_branch
 sha1 = branch.commit.hexsha
 header = HEADER.format(sha1, branch)
 print("Made a header.")
+
+if site_name == "enwiki" and root == "User:APerson/delsort.js" and str(branch) == "master":
+    print("Updating script documentation page.")
+    docs = page.Page(site, title="User:APerson/delsort")
+    docs_wikitext = docs.getWikiText()
+    date = re.search("start date and age\|\d+\|\d+\|\d+", docs_wikitext).group(0)
+    now = datetime.datetime.now()
+    revised_date = "start date and age|%d|%d|%d" % (now.year, now.month, now.day)
+    new_wikitext = docs_wikitext.replace(date, revised_date)
+    result = docs.edit(text=new_wikitext, summary="Updating delsort \"updated\" time")
+    if result["edit"]["result"] == "Success":
+        print(colored.green("Success!") + " Updated the \"updated\" time on the documentation.")
+    else:
+        print(colored.red("Error updating the \"updated\" time: ") + result)
 
 with open("delsort.js", "r") as delsort:
     new_text = header + delsort.read()
