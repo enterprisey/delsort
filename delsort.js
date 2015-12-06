@@ -1,15 +1,37 @@
 //<nowiki>
 ( function ( $, mw ) {
-        mw.loader.load( "jquery.chosen" );
-        mw.loader.load( "mediawiki.ui.input", "text/css" );
+    mw.loader.load( "jquery.chosen" );
+    mw.loader.load( "mediawiki.ui.input", "text/css" );
 
-        var delsortCategories = {
-                "Geographic": ["United States of America", "New York", "California", "United Kingdom", "England", "India", "Australia"],
-                "Arts": ["Film", "Fictional elements", "Music", "Television", "Albums and songs"],
-                "People": ["People", "Academics and educators", "Actors and filmmakers", "Authors", "Bands and musicians", "Businesspeople", "Politicians", "Sportspeople"],
-                "Technology": ["Software", "Internet", "Websites"],
-                "Miscellaneous": ["Organizations", "Football", "Martial arts", "Christianity", "Business"]
-        };
+    var delsortCategories = {
+        "People": ["People", "Academics and educators", "Actors and filmmakers", "Authors", "Bands and musicians", "Businesspeople", "Politicians", "Sportspeople", "Lists of people"],
+        "Arts": ["Arts", "Fictional elements", "Science fiction"],
+        "Arts/Culinary": ["Food and drink", "Wine"],
+        "Arts/Language": ["Language", "Literature", "Poetry"],
+        "Arts/Performing": ["Albums and songs", "Television", "Music", "Film", "Radio"],
+        "Arts/Visual arts": ["Visual arts", "Architecture", "Fashion", "Photography"],
+        "Arts/Comics and animation": ["Comics and animation", "Anime and manga", "Webcomics"],
+        "Places of interest": ["Shopping malls", "Museums and libraries", "Schools"],
+        "Topical": ["Advertising", "Aviation", "Bibliographies", "Bilateral relations", "Business", "Conservatism", "Conspiracy theories", "Crime", "Education", "Environment", "Ethnic groups", "Events", "Firearms", "Games", "Health and fitness", "History", "Law", "Logic", "Magic", "Management", "Medicine", "Military", "News media", "Organisms", "Organizations", "Paranormal", "Philosophy", "Piracy", "Politics", "Sexuality and gender", "Terrorism", "Transportation"],
+        "Topical/Science": ["Science", "Behavioural science", "Social science", "Mathematics"],
+        "Topical/Religion": ["Religion", "Atheism", "Bible", "Buddhism", "Christianity", "Islam", "Judaism", "Hinduism", "Paganism", "Sikhism", "Spirituality"],
+        "Topical/Technology": ["Technology", "Computing", "Internet", "Software", "Websites"],
+        "Topical/Culture": ["Fashion", "Popular culture"],
+        "Topical/Sports": ["Sports", "American football", "Baseball", "Basketball", "Bodybuilding", "Cricket", "Cycling", "Football", "Golf", "Ice hockey", "Rugby union", "Softball", "Martial arts", "Wrestling"],
+        "Wikipedia page type": ["Disambiguations", "Lists"],
+        "Unsorted": ["Islands"],
+        "Geographic/Africa": ["Africa", "Egypt", "Ethiopia", "Kenya", "Mauritius", "Morocco", "Nigeria", "Somalia", "South Africa", "Zimbabwe"],
+        "Geographic/Asia": ["Asia", "Afghanistan", "Bangladesh", "Bahrain", "Brunei", "Cambodia", "China", "Hong Kong", "India", "Indonesia", "Japan", "Korea", "Malaysia", "Maldives", "Mongolia", "Nepal", "Pakistan", "Philippines", "Singapore", "Sri Lanka", "Taiwan", "Thailand", "Vietnam"],
+        "Geographic/Asia/Central Asia": ["Central Asia", "Kazakhstan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Uzbekistan"],
+        "Geographic/Asia/Middle East": ["Middle East", "Iran", "Iraq", "Israel", "Lebanon", "Palestine", "Saudi Arabia", "Syria", "United Arab Emirates"],
+        "Geographic/Europe": ["Europe", "Albania", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Georgia (country)", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Jersey", "Kosovo", "Latvia", "Lithuania", "Luxembourg", "Macedonia", "Moldova", "Montenegro", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Russia", "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "Yugoslavia"],
+        "Geographic/Europe/United Kingdom": ["United Kingdom", "England", "Northern Ireland", "Scotland", "Wales"],
+        "Geographic/Oceania": ["Oceania", "Antarctica", "Australia", "New Zealand"],
+        "Geographic/Americas": ["Americas"],
+        "Geographic/Americas/Canada": ["Canada", "British Columbia", "Manitoba", "Nova Scotia", "Ontario", "Quebec"],
+        "Geographic/Americas/Latin America": ["Latin America", "Caribbean", "South America", "Argentina", "Barbados", "Belize", "Bolivia", "Brazil", "Chile", "Colombia", "Cuba", "Ecuador", "El Salvador", "Guatemala", "Haiti", "Mexico", "Panama", "Paraguay", "Peru", "Puerto Rico", "Trinidad and Tobago", "Uruguay", "Venezuela"],
+        "Geographic/Americas/USA": ["United States of America", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia (U.S. state)", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "Washington, D.C.", "West Virginia", "Wisconsin", "Wyoming"]
+    };
     var ADVERTISEMENT = " ([[User:APerson/delsort|delsort.js]])";
 
     if (wgPageName.indexOf('Wikipedia:Articles_for_deletion/') != -1 &&
