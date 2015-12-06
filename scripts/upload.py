@@ -88,6 +88,6 @@ with open("delsort.js", "r") as delsort:
     print("Uploading delsort...")
     result = target.edit(text=new_text, summary=edit_summary)
     if result["edit"]["result"] == "Success":
-        print(colored.green("Done!") + " Uploaded delsort.")
+        print(colored.green("Done!") + " Uploaded delsort to " + root)
     else:
         print(colored.red("Error uploading delsort: ") + result)
