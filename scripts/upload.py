@@ -19,7 +19,7 @@ import git
 from wikitools import page
 from wikitools import wiki
 
-USAGE = "Usage: python scripts/upload.py SITE ROOT USERNAME [PASSWORD]"
+USAGE = "Usage: python scripts/upload.py SITE TARGET USERNAME [PASSWORD]"
 API_PAGES = {"enwiki": "https://en.wikipedia.org/w/api.php",
              "testwiki": "https://test.wikipedia.org/w/api.php"}
 HEADER = "/* Uploaded from the Git repo @ {} (branch {}) */\n"
