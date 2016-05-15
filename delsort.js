@@ -32,213 +32,249 @@
         "Geographic/Americas/Latin America": ["Latin America", "Caribbean", "South America", "Argentina", "Barbados", "Belize", "Bolivia", "Brazil", "Chile", "Colombia", "Cuba", "Ecuador", "El Salvador", "Guatemala", "Haiti", "Mexico", "Panama", "Paraguay", "Peru", "Puerto Rico", "Trinidad and Tobago", "Uruguay", "Venezuela"],
         "Geographic/Americas/USA": ["United States of America", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia (U.S. state)", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "Washington, D.C.", "West Virginia", "Wisconsin", "Wyoming"]
     };
+    var afdcCategories = { "m": "Media and music", "o": "Organization, corporation, or product", "b": "Biographical", "s": "Society topics", "w": "Web or Internet", "g": "Games or sports", "t": "Science and technology", "f": "Fiction and the arts", "p": "Places and transportation", "i": "Indiscernible or unclassifiable topic", "u": "Not sorted yet" };
     var ADVERTISEMENT = " ([[User:APerson/delsort|delsort.js]])";
 
-    if (wgPageName.indexOf('Wikipedia:Articles_for_deletion/') != -1 &&
-        wgPageName.indexOf('Wikipedia:Articles_for_deletion/Log/201') == -1) {
+    if ( mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/') != -1 &&
+         mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/Log/201') == -1) {
         var portletLink = mw.util.addPortletLink('p-cactions', '#', 'Delsort', 'pt-delsort', 'Perform deletion sorting');
         $( portletLink ).click( function ( e ) {
-		e.preventDefault();
+            e.preventDefault();
 
-                // Validation for new custom fields
-                var validateCustomCat = function ( container ) {
-		    var categoryName = container.children( "input" ).first().val();
-		    $.getJSON(
-                        mw.util.wikiScript('api'),
-                        {
-                            format: 'json',
-                            action: 'query',
-                            prop: 'pageprops',
-                            titles: "Wikipedia:WikiProject Deletion sorting/" + categoryName
+            // Validation for new custom fields
+            var validateCustomCat = function ( container ) {
+                var categoryName = container.children( "input" ).first().val();
+                $.getJSON(
+                    mw.util.wikiScript('api'),
+                    {
+                        format: 'json',
+                        action: 'query',
+                        prop: 'pageprops',
+                        titles: "Wikipedia:WikiProject Deletion sorting/" + categoryName
+                    }
+                ).done( function ( data ) {
+                    var setStatus = function ( status ) {
+                        var text = "Not sure";
+                        var imageSrc = "https://upload.wikimedia.org/wikipedia/commons/a/ad/Question_mark_grey.png";
+                        switch( status ) {
+                        case "d":
+                            text = "Doesn't exist";
+                            imageSrc = "https://upload.wikimedia.org/wikipedia/commons/5/5f/Red_X.svg";
+                            break;
+                        case "e":
+                            text = "Exists";
+                            imageSrc = "https://upload.wikimedia.org/wikipedia/commons/1/16/Allowed.svg";
+                            break;
                         }
-                    ).done( function ( data ) {
-                        var setStatus = function ( status ) {
-			    var text = "Not sure";
-                            var imageSrc = "https://upload.wikimedia.org/wikipedia/commons/a/ad/Question_mark_grey.png";
-                            switch( status ) {
-			    case "d":
-			        text = "Doesn't exist";
-			        imageSrc = "https://upload.wikimedia.org/wikipedia/commons/5/5f/Red_X.svg";
-			        break;
-			    case "e":
-			        text = "Exists";
-			        imageSrc = "https://upload.wikimedia.org/wikipedia/commons/1/16/Allowed.svg";
-			        break;
-                            }
-                            container.children( ".category-status" ).empty()
-			        .append( $( "<img>", { "src": imageSrc,
-					    "style": "padding: 0 5px; width: 20px; height: 20px" } ) )
-                                .append( text );
-                        }
-                        if( data && data.query && data.query.pages ) {
-                            if( data.query.pages.hasOwnProperty( "-1" ) ) {
-                                console.log( categoryName + " DOES NOT EXIST" );
-                                setStatus( "d" );
-                            } else {
-                                console.log( categoryName + " EXISTS" );
-                                setStatus( "e" );
-                            }
+                        container.children( ".category-status" ).empty()
+                            .append( $( "<img>", { "src": imageSrc,
+                                                   "style": "padding: 0 5px; width: 20px; height: 20px" } ) )
+                            .append( text );
+                    }
+                    if( data && data.query && data.query.pages ) {
+                        if( data.query.pages.hasOwnProperty( "-1" ) ) {
+                            setStatus( "d" );
                         } else {
-                            setStatus( "n" );
+                            setStatus( "e" );
                         }
-                    } );
-                }
-
-                // Define a function to add a new custom field, used below
-                var addCustomField = function ( e ) {
-                        $( "<div>" )
-                            .insertBefore( "#delsort #sort-button" )
-                            .css( "width", "40%" )
-                            .css( "margin", "0.25em auto" )
-                        .append( $( "<input>" )
-                            .attr( "type", "text" )
-                            .addClass( "mw-ui-input mw-ui-input-inline custom-delsort-field" )
-                            .change( function ( e ) {
-                                validateCustomCat( $( this ).parent() );
-                            } ) )
-                        .append( $( "<span>" ).addClass( "category-status" ) )
-                        .append( " (" )
-                        .append( $( "<img>", { "src": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Crystal_128_reload.svg",
-                                               "style": "width: 15px; height: 15px; cursor: pointer" } )
-                            .click( function ( e ) {
-                                validateCustomCat( $( this ).parent() );
-                            } ) )
-                        .append( ")" )
-                        .append( $( "<button>" )
-                            .addClass( "mw-ui-button mw-ui-destructive mw-ui-quiet" )
-                            .text( "Remove" )
-                            .click( function ( e ) {
-                                $( this ).parent().remove();
-                            } ) );
-                };
-
-                $( "#jump-to-nav" ).after( $( "<div>" )
-                    .attr( "id", "delsort" )
-                    .css( "border", "thin solid #c5c5c5" )
-                    .css( "box-shadow", "0 3px 8px rgba(0, 0, 0, .25)" )
-                    .css( "border-radius", "3px" )
-                    .css( "padding", "5px" )
-                    .css( "position", "relative" )
-                    .append( $( "<div>" )
-                        .text( "Select a deletion sorting category" )
-                        .css( "font-size", "larger" )
-                        .css( "font-weight", "bold" )
-                        .css( "text-align", "center" )
-                        .attr( "id", "delsort-title") )
-                    .append( $( "<div>" ) // this is disgusting but it works somehow
-                        .css( "width", "100%" )
-                        .append( $( "<div>" ) // yes, that is yet another div
-                            .css( "text-align", "center" )
-                            .css( "margin", "0.5em 0" )
-                            .append( $( "<select>" )
-                                .attr( "data-placeholder",
-                                       "Select a deletion sorting category..." )
-                                .attr( "multiple", "true" ) )
-                            .append( $( "<button>" )
-                                .addClass( "mw-ui-button mw-ui-progressive mw-ui-quiet" )
-                                .text( "Add custom" )
-                                .click( addCustomField ) ) ) )
-                    .append( $( "<button>" )
-                        .addClass( "mw-ui-button mw-ui-destructive mw-ui-quiet" )
-                        .css( "position", "absolute" )
-                        .css( "top", "5px" )
-                        .css( "right", "5px" )
-                        .text( "Close" )
-                        .click( function ( e ) {
-                                $( "#delsort" ).remove();
-                        } ) ) );
-                $.each( delsortCategories, function ( groupName, categories ) {
-                        var group = $( "<optgroup>" )
-                            .appendTo( "#delsort select" )
-                            .attr( "label", groupName );
-                        $.each( categories, function ( index, category ) {
-                                group.append( $( "<option>" )
-                                    .val( category )
-                                    .text( category ) );
-                        } );
+                    } else {
+                        setStatus( "n" );
+                    }
                 } );
+            }
+
+            // Define a function to add a new custom field, used below
+            var addCustomField = function ( e ) {
+                $( "<div>" )
+                    .appendTo( "#delsort-td" )
+                    .css( "width", "100%" )
+                    .css( "margin", "0.25em auto" )
+                    .append( $( "<input>" )
+                             .attr( "type", "text" )
+                             .addClass( "mw-ui-input mw-ui-input-inline custom-delsort-field" )
+                             .change( function ( e ) {
+                                 validateCustomCat( $( this ).parent() );
+                             } ) )
+                    .append( $( "<span>" ).addClass( "category-status" ) )
+                    .append( " (" )
+                    .append( $( "<img>", { "src": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Crystal_128_reload.svg",
+                                           "style": "width: 15px; height: 15px; cursor: pointer" } )
+                             .click( function ( e ) {
+                                 validateCustomCat( $( this ).parent() );
+                             } ) )
+                    .append( ")" )
+                    .append( $( "<button>" )
+                             .addClass( "mw-ui-button mw-ui-destructive mw-ui-quiet" )
+                             .text( "Remove" )
+                             .click( function ( e ) {
+                                 $( this ).parent().remove();
+                             } ) );
+            };
+
+            $( "#jump-to-nav" ).after( `
+<div style="border: thin solid rgb(197, 197, 197); box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.25); border-radius: 3px; padding: 5px; position: relative;" id="delsort">
+  <div id="delsort-title" style="font-size: larger; font-weight: bold; text-align: center;">Select a deletion sorting category</div>
+  <table style="margin: 2em auto; border-collapse: collapse;" id="delsort-table">
+    <tr style="font-size: larger"><th>AFDC</th><th>DELSORT</th></tr>
+    <tr>
+      <td style="padding-right: 10px;">
+        <table id="afdc">
+        </table>
+      </td>
+      <td style="border-left: solid black thick; padding-left: 10px; vertical-align: top;" id="delsort-td">
+          <select multiple="multiple" data-placeholder="Select a deletion sorting category..."></select>
+          <button id="add-custom-button" class="mw-ui-button mw-ui-progressive mw-ui-quiet">Add custom</button>
+      </td>
+    </tr>
+  </table>
+  <button style="position: absolute; top: 5px; right: 5px;" id="close-button" class="mw-ui-button mw-ui-destructive mw-ui-quiet">Close</button>
+</div>` );
+            $( "#add-custom-button" ).click( addCustomField );
+            $( "#close-button" ).click( function ( e ) { $( "#delsort" ).remove(); } );
+
+            var afdcHtml = "";
+            Object.keys( afdcCategories ).forEach( function ( code, i ) {
+                if ( i % 2 === 0 ) afdcHtml += "<tr>";
+                afdcHtml += "<td><input type='radio' name='afdc' value='" + code + "' id='afdc-" + code + "' /><label for='afdc-" + code + "'>" + afdcCategories[ code ] + "</label></td>";
+                if ( i % 2 !== 0 ) afdcHtml += "</tr>";
+            } );
+
+            // If there are an odd number of AFDC cats, we need to close off the last row
+            if ( Object.keys( afdcCategories ).length % 2 !== 0 ) afdcHtml += "</tr>";
+
+            $( "#afdc" ).html( afdcHtml );
+
+            // Build the deletion sorting categories
+            $.each( delsortCategories, function ( groupName, categories ) {
+                var group = $( "<optgroup>" )
+                    .appendTo( "#delsort select" )
+                    .attr( "label", groupName );
+                $.each( categories, function ( index, category ) {
+                    group.append( $( "<option>" )
+                                  .val( category )
+                                  .text( category ) );
+                } );
+            } );
 
             // Set up the chosen one (some code stolen from http://stackoverflow.com/a/27445788)
             $( "#delsort select" ).chosen();
             $( "#delsort .chzn-container" ).css( "text-align", "left" );
 
-                // Add the button that triggers sorting
-                $( "#delsort" ).append( $( "<div>" )
+            // Add the button that triggers sorting
+            $( "#delsort" ).append( $( "<div>" )
                     .css( "text-align", "center" )
                     .append( $( "<button> ")
                         .addClass( "mw-ui-button" )
                         .addClass( "mw-ui-progressive" )
                         .attr( "id", "sort-button" )
-                        .text( "Sort deletion discussion" )
+                        .text( "Save changes" )
                         .click( function ( e ) {
 
-                                // Make a status list
-                                $( "#delsort" ).append( $( "<ul> ")
-                            .attr( "id", "status" ) );
+                            // Make a status list
+                            $( "#delsort" ).append( $( "<ul> ")
+                                                    .attr( "id", "status" ) );
 
-                                // Build a list of categories
-                                var categories = $( "#delsort select" ).val() || [];
-                                console.log("before each: " + categories);
-                                $( ".custom-delsort-field" ).each( function ( index, element ) {
-                                        categories.push( $( element ).val() );
-                                } );
-                                console.log("before filter: " + categories);
-                                categories = categories.filter( Boolean ); // remove empty strings
-								console.log("after filter: " + categories);
-                                // Actually do the delsort
-                            delsortAll( categories );
+                            // Build a list of categories
+                            var categories = $( "#delsort select" ).val() || [];
+                            $( ".custom-delsort-field" ).each( function ( index, element ) {
+                                categories.push( $( element ).val() );
+                            } );
+                            categories = categories.filter( Boolean ); // remove empty strings
+                            
+                            // Obtain the target AFDC category, brought to you by http://stackoverflow.com/a/24886483/1757964
+                            var afdcTarget = document.querySelector('input[name="afdc"]:checked').value;
+                            
+                            // Actually do the delsort
+                            saveChanges( categories, afdcTarget );
                         } ) ) );
+            autofillForm();
+        } );
+    } // End if ( mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/') ... )
+
+    /*
+     * Autofills some of the form data based on parsing the current discussion's wikitext.
+     */
+    function autofillForm() {
+        $.getJSON(
+            mw.util.wikiScript('api'),
+            {
+                format: 'json',
+                action: 'query',
+                prop: 'revisions',
+                rvprop: 'content',
+                rvlimit: 1,
+                titles: mw.config.get( "wgPageName" )
+            }
+        ).done( function ( data ) {
+            try {
+                var pageId = Object.keys(data.query.pages)[0];
+                wikitext = data.query.pages[pageId].revisions[0]['*'];
+
+                var regexMatch = /REMOVE THIS TEMPLATE WHEN CLOSING THIS AfD\|(.)/.exec( wikitext );
+                if ( regexMatch ) {
+                    var currentClass = regexMatch[1].toLowerCase();
+                    $( "#afdc-" + currentClass ).prop( "checked", true );
+                }
+            } catch ( e ) {
+                console.log( "Error autofilling: " + e.message );
+            }
         } );
     }
 
-    function delsortAll( cats ) {
+    /*
+     * Saves the changes to the current discussion page by adding delsort notices (if applicable) and updating the AFDC cat
+     */
+    function saveChanges( cats, afdcTarget ) {
 
         // Indicate to the user that we're doing some deletion sorting
-        $( "#delsort .chzn-container" ).parent().remove();
-        $( ".custom-delsort-field" ).parent().remove();
+        $( "#delsort-table" ).remove();
         $( "#delsort #sort-button" )
-            .text( "Sorting discussion..." )
+            .text( "Sorting and categorizing discussion..." )
             .prop( "disabled", true )
             .fadeOut( 400, function () {
                 $( this ).remove();
             } );
-        var titleCategory = ( cats.length === 1 ) ? ( "the \"" + cats[0] + "\" category" ) : ( cats.length + " categories" );
+        var categoryTitleComponent = ( cats.length === 1 ) ? ( "the \"" + cats[0] + "\" category" ) : ( cats.length + " categories" );
+        var afdcTitleComponent = " and categorizing it as " + afdcCategories[ afdcTarget ];
         $( "#delsort-title" )
-            .html( "Sorting discussion into " + titleCategory + "<span id=\"delsort-dots\"></span>" );
+            .html( "Sorting discussion into " + categoryTitleComponent + afdcTitleComponent + "<span id=\"delsort-dots\"></span>" );
 
         // Start the animation, using super-advanced techniques
         var animationInterval = setInterval( function () {
-                $( "#delsort-dots" ).text( $( "#delsort-dots" ).text() + "." );
-                if( $( "#delsort-dots" ).text().length > 3 ) {
-                        $( "#delsort-dots" ).text( "" );
-                }
+            $( "#delsort-dots" ).text( $( "#delsort-dots" ).text() + "." );
+            if( $( "#delsort-dots" ).text().length > 3 ) {
+                $( "#delsort-dots" ).text( "" );
+            }
         }, 600 );
 
-        // Place (a) notification(s) on the discussion
-        var notificationDeferred = postDelsortNotices( cats );
+        // Place (a) notification(s) on the discussion and update its AFDC cat
+        var editDiscussionDeferred = postDelsortNoticesAndUpdateAfdc( cats, afdcTarget );
 
         // List the discussion at the DELSORT pages
         var deferreds = cats.map( listAtDelsort );
 
-        // We still have to wait for notifications to be placed
-        deferreds.push( notificationDeferred );
+        // We still have to wait for the discussion to be edited
+        deferreds.push( editDiscussionDeferred );
 
         // When everything's done, say something
         $.when.apply( $, deferreds ).then( function () {
 
-                // We're done!
-                $( "#delsort-title" )
-                    .text( "Done sorting discussion into " + titleCategory + "." );
-                showStatus( "<b>Done!</b> Discussion sorted into " + titleCategory + ". (" )
-                    .append( $( "<a>" )
-                        .text( "reload" )
-                        .attr( "href", "#" )
-                        .click( function () { document.location.reload( true ); } ) )
-                    .append( ")" );
-                clearInterval( animationInterval );
+            // We're done!
+            $( "#delsort-title" )
+                .text( "Done categorizing and sorting discussion into " + categoryTitleComponent + "." );
+            showStatus( "<b>Done!</b> Discussion categorized and sorted into " + categoryTitleComponent + ". (" )
+                .append( $( "<a>" )
+                         .text( "reload" )
+                         .attr( "href", "#" )
+                         .click( function () { document.location.reload( true ); } ) )
+                .append( ")" );
+            clearInterval( animationInterval );
         } );
     }
 
+    /*
+     * Adds a new status to the status list, and returns the newly-displayed element.
+     */
     function showStatus( newStatus ) {
         return $( "<li>" )
              .appendTo( "#delsort ul#status" )
@@ -248,42 +284,96 @@
     /*
      * Adds some notices to the discussion page that this discussion was sorted.
      */
-    function postDelsortNotices( cats ) {
+    function postDelsortNoticesAndUpdateAfdc( cats, afdcTarget ) {
         var deferred = $.Deferred();
 
-        // Build a notification string
+        var statusElement = showStatus( "Updating the discussion page..." );
+
+        var wikitext;
+        $.getJSON(
+            mw.util.wikiScript('api'),
+            {
+                format: 'json',
+                action: 'query',
+                prop: 'revisions',
+                rvprop: 'content',
+                rvlimit: 1,
+                titles: mw.config.get( 'wgPageName' )
+            }
+        ).done( function ( data ) {
+            try {
+                var pageId = Object.keys(data.query.pages)[0];
+                wikitext = data.query.pages[pageId].revisions[0]['*'];
+
+                statusElement.html( "Processing wikitext..." );
+
+                // Process wikitext
+
+                // First, add delsort notices
+                wikitext += createDelsortNotices( cats );
+
+                // Then, update the AFDC category
+                var afdcMatch = wikitext.match( /REMOVE THIS TEMPLATE WHEN CLOSING THIS AfD/ );
+                if ( afdcMatch && afdcMatch[ 0 ] ) {
+                    var afdcMatchIndex = wikitext.indexOf( afdcMatch[ 0 ] ) + afdcMatch[ 0 ].length,
+                        charAfterTemplateName = wikitext[ afdcMatchIndex ];
+                    if ( charAfterTemplateName === "}" ) {
+                        wikitext = wikitext.slice( 0, afdcMatchIndex ) + "|" + afdcTarget.toUpperCase() + wikitext.slice( afdcMatchIndex );
+                    } else if ( charAfterTemplateName === "|" ) {
+                        wikitext = wikitext.slice( 0, afdcMatchIndex + 1) + afdcTarget.toUpperCase() + wikitext.slice( afdcMatchIndex + 2 );
+                    }
+                }
+
+                statusElement.html( "Processed wikitext. Saving..." );
+
+                var catPlural = ( cats.length === 1 ) ? "" : "s";
+                $.ajax( {
+                    url: mw.util.wikiScript( 'api' ),
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        format: 'json',
+                        action: 'edit',
+                        title: mw.config.get( 'wgPageName' ),
+                        summary: "Updating nomination page with notices or new AFDC cat" + ADVERTISEMENT,
+                        token: mw.user.tokens.get( 'editToken' ),
+                        text: wikitext
+                    }
+                } ).done ( function ( data ) {
+                    if ( data && data.edit && data.edit.result && data.edit.result == 'Success' ) {
+                        statusElement.html( cats.length + " notice" + catPlural + " placed on the discussion!" );
+                        showStatus( "Discussion categorized under " + afdcCategories[ afdcTarget ] + " with AFDC." );
+                        deferred.resolve();
+                    } else {
+                        statusElement.html( "While editing the current discussion page, the edit query returned an error. =(" );
+                        deferred.reject();
+                    }
+                } ).fail ( function() {
+                    statusElement.html( "While editing the current discussion page, the AJAX request failed." );
+                    deferred.reject();
+                } );
+            } catch ( e ) {
+                statusElement.html( "While getting the current page content, there was an error." );
+                console.log( "Current page content request error: " + e.message );
+                console.log( "Current page content request response: " + JSON.stringify( data ) );
+                deferred.reject();
+            }
+        } ).fail( function () {
+            statusElement.html( "While getting the current content, there was an AJAX error." );
+            deferred.reject();
+        } );
+        return deferred;
+    }
+
+    /*
+     * Turns a list of delsort categories into a number of delsort template notice substitutions.
+     */
+    function createDelsortNotices( cats ) {
         var appendText = "";
         cats.forEach( function ( cat ) {
                 appendText += "\n\{\{subst:Delsort|" + cat + "|\~\~\~\~\}\}";
         } );
-
-        // Post the notice to the discussion
-        var catPlural = ( cats.length === 1 ) ? "" : "s";
-        $.ajax( {
-            url: mw.util.wikiScript( 'api' ),
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                format: 'json',
-                action: 'edit',
-                title: mw.config.get( 'wgPageName' ),
-                summary: "Placing notification for listing at [[WP:DELSORT]]" + ADVERTISEMENT,
-                token: mw.user.tokens.get( 'editToken' ),
-                appendtext: appendText
-            }
-        } ).done ( function ( data ) {
-            if ( data && data.edit && data.edit.result && data.edit.result == 'Success' ) {
-                showStatus( cats.length + " notice" + catPlural + " placed on the discussion!" );
-                deferred.resolve();
-            } else {
-                showStatus( "While placing " + cats.length + " notification" + catPlural + ", the edit query returned an error. =(" );
-                deferred.reject();
-            }
-        } ).fail ( function() {
-            showStatus( "While placing " + cats.length + " notification" + catPlural + ", the AJAX request failed." );
-            deferred.reject();
-        } );
-        return deferred;
+        return appendText;
     }
     
     /*
@@ -294,7 +384,7 @@
         
         // Make a status element just for this category
         var statusElement = showStatus( "Listing this discussion at DELSORT/" +
-                                        cat + "..." ); 
+                                        cat + "..." );
         
         // First, get the current wikitext for the DELSORT page
         var wikitext;
