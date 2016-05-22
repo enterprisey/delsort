@@ -35,6 +35,8 @@
     var afdcCategories = { "m": "Media and music", "o": "Organization, corporation, or product", "b": "Biographical", "s": "Society topics", "w": "Web or Internet", "g": "Games or sports", "t": "Science and technology", "f": "Fiction and the arts", "p": "Places and transportation", "i": "Indiscernible or unclassifiable topic", "u": "Not sorted yet" };
     var ADVERTISEMENT = " ([[User:APerson/delsort|delsort.js]])";
 
+    var currentAfdcCat = "";
+
     if ( mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/') != -1 &&
          mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/Log/201') == -1) {
         var portletLink = mw.util.addPortletLink('p-cactions', '#', 'Delsort', 'pt-delsort', 'Perform deletion sorting');
@@ -210,10 +212,16 @@
                 var pageId = Object.keys(data.query.pages)[0];
                 wikitext = data.query.pages[pageId].revisions[0]['*'];
 
-                var regexMatch = /REMOVE THIS TEMPLATE WHEN CLOSING THIS AfD\|(.)/.exec( wikitext );
+                var regexMatch = /REMOVE THIS TEMPLATE WHEN CLOSING THIS AfD(?:\|(.*))?}}/.exec( wikitext );
                 if ( regexMatch ) {
-                    var currentClass = regexMatch[1].toLowerCase();
-                    $( "#afdc-" + currentClass ).prop( "checked", true );
+                    var templateParameter = regexMatch[1];
+                    if ( templateParameter ) {
+                        currentAfdcCat = templateParameter;
+                        if ( templateParameter.length === 1 ) {
+                            var currentClass = templateParameter.toLowerCase();
+                            $( "#afdc-" + currentClass ).prop( "checked", true );
+                        }
+                    }
                 }
             } catch ( e ) {
                 console.log( "Error autofilling: " + e.message );
@@ -225,17 +233,18 @@
      * Saves the changes to the current discussion page by adding delsort notices (if applicable) and updating the AFDC cat
      */
     function saveChanges( cats, afdcTarget ) {
+        var changingAfdcCat = currentAfdcCat.toLowerCase() !== afdcTarget;
 
         // Indicate to the user that we're doing some deletion sorting
         $( "#delsort-table" ).remove();
         $( "#delsort #sort-button" )
-            .text( "Sorting and categorizing discussion..." )
+            .text( "Sorting " + ( changingAfdcCat ? "and categorizing " : "" ) + "discussion..." )
             .prop( "disabled", true )
             .fadeOut( 400, function () {
                 $( this ).remove();
             } );
         var categoryTitleComponent = ( cats.length === 1 ) ? ( "the \"" + cats[0] + "\" category" ) : ( cats.length + " categories" );
-        var afdcTitleComponent = " and categorizing it as " + afdcCategories[ afdcTarget ];
+        var afdcTitleComponent = changingAfdcCat ? " and categorizing it as " + afdcCategories[ afdcTarget ] : "";
         $( "#delsort-title" )
             .html( "Sorting discussion into " + categoryTitleComponent + afdcTitleComponent + "<span id=\"delsort-dots\"></span>" );
 
@@ -261,8 +270,8 @@
 
             // We're done!
             $( "#delsort-title" )
-                .text( "Done categorizing and sorting discussion into " + categoryTitleComponent + "." );
-            showStatus( "<b>Done!</b> Discussion categorized and sorted into " + categoryTitleComponent + ". (" )
+                .text( "Done " + ( changingAfdcCat ? "updating the discussion's AFDC category and " : "" ) + "sorting discussion into " + categoryTitleComponent + "." );
+            showStatus( "<b>Done!</b> " + ( changingAfdcCat ? "The discussion's AFDC was updated and it was" : "Discussion was" ) + " sorted into " + categoryTitleComponent + ". (" )
                 .append( $( "<a>" )
                          .text( "reload" )
                          .attr( "href", "#" )
@@ -285,11 +294,11 @@
      * Adds some notices to the discussion page that this discussion was sorted.
      */
     function postDelsortNoticesAndUpdateAfdc( cats, afdcTarget ) {
-        var deferred = $.Deferred();
+        var changingAfdcCat = currentAfdcCat.toLowerCase() !== afdcTarget,
+            deferred = $.Deferred(),
+            statusElement = showStatus( "Updating the discussion page..." ),
+            wikitext;
 
-        var statusElement = showStatus( "Updating the discussion page..." );
-
-        var wikitext;
         $.getJSON(
             mw.util.wikiScript('api'),
             {
@@ -320,7 +329,7 @@
                     if ( charAfterTemplateName === "}" ) {
                         wikitext = wikitext.slice( 0, afdcMatchIndex ) + "|" + afdcTarget.toUpperCase() + wikitext.slice( afdcMatchIndex );
                     } else if ( charAfterTemplateName === "|" ) {
-                        wikitext = wikitext.slice( 0, afdcMatchIndex + 1) + afdcTarget.toUpperCase() + wikitext.slice( afdcMatchIndex + 2 );
+                        wikitext = wikitext.replace( "|" + currentAfdcCat + "}}", "|" + afdcTarget.toUpperCase() + "}}" );
                     }
                 }
 
@@ -335,14 +344,21 @@
                         format: 'json',
                         action: 'edit',
                         title: mw.config.get( 'wgPageName' ),
-                        summary: "Updating nomination page with notices or new AFDC cat" + ADVERTISEMENT,
+                        summary: "Updating nomination page with notices" + ( changingAfdcCat ? " and new AFDC cat" : "" ) + ADVERTISEMENT,
                         token: mw.user.tokens.get( 'editToken' ),
                         text: wikitext
                     }
                 } ).done ( function ( data ) {
                     if ( data && data.edit && data.edit.result && data.edit.result == 'Success' ) {
                         statusElement.html( cats.length + " notice" + catPlural + " placed on the discussion!" );
-                        showStatus( "Discussion categorized under " + afdcCategories[ afdcTarget ] + " with AFDC." );
+                        if ( changingAfdcCat ) {
+                            if ( currentAfdcCat ) {
+                                var formattedCurrentAfdcCat = currentAfdcCat.length === 1 ? afdcCategories[ currentAfdcCat.toLowerCase() ] : currentAfdcCat;
+                                showStatus( "Discussion's AFDC category was changed from " + formattedCurrentAfdcCat + " to " + afdcCategories[ afdcTarget ] + "." );
+                            } else {
+                                showStatus( "Discussion categorized under " + afdcCategories[ afdcTarget ] + " with AFDC." );
+                            }
+                        }
                         deferred.resolve();
                     } else {
                         statusElement.html( "While editing the current discussion page, the edit query returned an error. =(" );
