@@ -111,24 +111,24 @@
                              } ) );
             };
 
-            $( "#jump-to-nav" ).after( `
-<div style="border: thin solid rgb(197, 197, 197); box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.25); border-radius: 3px; padding: 5px; position: relative;" id="delsort">
-  <div id="delsort-title" style="font-size: larger; font-weight: bold; text-align: center;">Select a deletion sorting category</div>
-  <table style="margin: 2em auto; border-collapse: collapse;" id="delsort-table">
-    <tr style="font-size: larger"><th>AFDC</th><th>DELSORT</th></tr>
-    <tr>
-      <td style="padding-right: 10px;">
-        <table id="afdc">
-        </table>
-      </td>
-      <td style="border-left: solid black thick; padding-left: 10px; vertical-align: top;" id="delsort-td">
-          <select multiple="multiple" data-placeholder="Select a deletion sorting category..."></select>
-          <button id="add-custom-button" class="mw-ui-button mw-ui-progressive mw-ui-quiet">Add custom</button>
-      </td>
-    </tr>
-  </table>
-  <button style="position: absolute; top: 5px; right: 5px;" id="close-button" class="mw-ui-button mw-ui-destructive mw-ui-quiet">Close</button>
-</div>` );
+            $( "#jump-to-nav" ).after( '\
+<div style="border: thin solid rgb(197, 197, 197); box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.25); border-radius: 3px; padding: 5px; position: relative;" id="delsort">\
+  <div id="delsort-title" style="font-size: larger; font-weight: bold; text-align: center;">Select a deletion sorting category</div>\
+  <table style="margin: 2em auto; border-collapse: collapse;" id="delsort-table">\
+    <tr style="font-size: larger"><th>AFDC</th><th>DELSORT</th></tr>\
+    <tr>\
+      <td style="padding-right: 10px;">\
+        <table id="afdc">\
+        </table>\
+      </td>\
+      <td style="border-left: solid black thick; padding-left: 10px; vertical-align: top;" id="delsort-td">\
+          <select multiple="multiple" data-placeholder="Select a deletion sorting category..."></select>\
+          <button id="add-custom-button" class="mw-ui-button mw-ui-progressive mw-ui-quiet">Add custom</button>\
+      </td>\
+    </tr>\
+  </table>\
+  <button style="position: absolute; top: 5px; right: 5px;" id="close-button" class="mw-ui-button mw-ui-destructive mw-ui-quiet">Close</button>\
+</div>' );
             $( "#add-custom-button" ).click( addCustomField );
             $( "#close-button" ).click( function ( e ) { $( "#delsort" ).remove(); } );
 
