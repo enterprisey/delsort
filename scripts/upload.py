@@ -68,9 +68,9 @@ sha1 = branch.commit.hexsha
 header = HEADER.format(sha1, branch)
 print("Made a header.")
 
-if site_name == "enwiki" and root == "User:APerson/delsort.js" and str(branch) == "master":
+if site_name == "enwiki" and root == "User:Enterprisey/delsort.js" and str(branch) == "master":
     print("Updating script documentation page.")
-    docs = page.Page(site, title="User:APerson/delsort")
+    docs = page.Page(site, title="User:Enterprisey/delsort")
     docs_wikitext = docs.getWikiText()
     date = re.search("start date and age\|\d+\|\d+\|\d+", docs_wikitext).group(0)
     now = datetime.datetime.now()
