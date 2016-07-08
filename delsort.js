@@ -33,12 +33,12 @@
         "Geographic/Unsorted": ["Islands"]
     };
     var afdcCategories = { "m": "Media and music", "o": "Organization, corporation, or product", "b": "Biographical", "s": "Society topics", "w": "Web or Internet", "g": "Games or sports", "t": "Science and technology", "f": "Fiction and the arts", "p": "Places and transportation", "i": "Indiscernible or unclassifiable topic", "u": "Not sorted yet" };
-    var ADVERTISEMENT = " ([[User:APerson/delsort|delsort.js]])";
+    var ADVERTISEMENT = " ([[User:Enterprisey/delsort|assisted]])";
 
     var currentAfdcCat = "";
 
     if ( mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/') != -1 &&
-         mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/Log/201') == -1) {
+         mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/Log/') == -1) {
         var portletLink = mw.util.addPortletLink('p-cactions', '#', 'Delsort', 'pt-delsort', 'Perform deletion sorting');
         $( portletLink ).click( function ( e ) {
             e.preventDefault();
