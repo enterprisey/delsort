@@ -7,38 +7,38 @@
         "People": ["People", "Academics and educators", "Actors and filmmakers", "Artists", "Authors", "Bands and musicians", "Businesspeople", "Politicians", "Sportspeople", "Lists of people"],
         "Arts": ["Arts", "Fictional elements", "Science fiction"],
         "Arts/Culinary": ["Food and drink", "Wine"],
-        "Arts/Language": ["Language", "Literature", "Poetry", "Journalism"],
-        "Arts/Performing": ["Albums and songs", "Television", "Music", "Film", "Radio", "Theatre"],
+        "Arts/Language": ["Language", "Journalism", "Literature", "Poetry"],
+        "Arts/Performing": ["Albums and songs", "Film", "Music", "Radio", "Television", "Theatre"],
         "Arts/Visual arts": ["Visual arts", "Architecture", "Fashion", "Photography"],
         "Arts/Comics and animation": ["Comics and animation", "Anime and manga", "Webcomics"],
         "Places of interest": ["Shopping malls", "Museums and libraries", "Schools"],
-        "Topical": ["Advertising", "Aviation", "Bibliographies", "Bilateral relations", "Business", "Companies", "Conservatism", "Conspiracy theories", "Crime", "Disability", "Education", "Environment", "Ethnic groups", "Events", "Firearms", "Games", "Health and fitness", "History", "Law", "Logic", "Magic", "Management", "Medicine", "Military", "News media", "Organisms", "Organizations", "Paranormal", "Philosophy", "Piracy", "Politics", "Sexuality and gender", "Terrorism", "Transportation", "Video games"],
+        "Topical": ["Advertising", "Animal", "Aviation", "Bibliographies", "Bilateral relations", "Business", "Companies", "Conservatism", "Conspiracy theories", "Crime", "Disability", "Education", "Environment", "Ethnic groups", "Events", "Firearms", "Games", "Health and fitness", "History", "Law", "Logic", "Magic", "Management", "Medicine", "Military", "News media", "Organisms", "Organizations", "Paranormal", "Philosophy", "Piracy", "Politics", "Sexuality and gender", "Terrorism", "Transportation", "Video games"],
         "Topical/Science": ["Science", "Astronomy", "Behavioural science", "Social science", "Mathematics"],
         "Topical/Religion": ["Religion", "Atheism", "Bible", "Buddhism", "Christianity", "Islam", "Judaism", "Hinduism", "Paganism", "Sikhism", "Spirituality"],
         "Topical/Technology": ["Technology", "Computing", "Internet", "Software", "Websites"],
         "Topical/Culture": ["Fashion", "Popular culture"],
         "Topical/Sports": ["Sports", "American football", "Baseball", "Basketball", "Bodybuilding", "Cricket", "Cycling", "Football", "Golf", "Ice hockey", "Rugby union", "Softball", "Martial arts", "Wrestling"],
         "Wikipedia page type": ["Disambiguations", "Lists"],
-        "Unsorted": ["Islands", "Animal"],
         "Geographic/Africa": ["Africa", "Egypt", "Ethiopia", "Ghana", "Kenya", "Laos", "Mauritius", "Morocco", "Nigeria", "Somalia", "South Africa", "Zimbabwe"],
-        "Geographic/Asia": ["Asia", "Afghanistan", "Bangladesh", "Bahrain", "Brunei", "Cambodia", "China", "Hong Kong", "India", "Indonesia", "Japan", "Korea", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "Pakistan", "Philippines", "Singapore", "Sri Lanka", "Taiwan", "Thailand", "Vietnam"],
+        "Geographic/Asia": ["Asia", "Afghanistan", "Bangladesh", "Bahrain", "Brunei", "Cambodia", "China", "Hong Kong", "India", "Indonesia", "Japan", "Korea", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "Pakistan", "Philippines", "Singapore", "South Korea", "Sri Lanka", "Taiwan", "Thailand", "Vietnam"],
         "Geographic/Asia/Central Asia": ["Central Asia", "Kazakhstan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Uzbekistan"],
-        "Geographic/Asia/Middle East": ["Middle East", "Iran", "Iraq", "Israel", "Kuwait", "Lebanon", "Libya", "Palestine", "Saudi Arabia", "Syria", "United Arab Emirates"],
+        "Geographic/Asia/Middle East": ["Middle East", "Iran", "Iraq", "Israel", "Kuwait", "Lebanon", "Libya", "Palestine", "Saudi Arabia", "Syria", "United Arab Emirates", "Yemen"],
         "Geographic/Europe": ["Europe", "Albania", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Georgia (country)", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Jersey", "Kosovo", "Latvia", "Lithuania", "Luxembourg", "Macedonia", "Moldova", "Montenegro", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Russia", "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "Yugoslavia"],
         "Geographic/Europe/United Kingdom": ["United Kingdom", "England", "Northern Ireland", "Scotland", "Wales"],
         "Geographic/Oceania": ["Oceania", "Antarctica", "Australia", "New Zealand"],
         "Geographic/Americas": ["Americas"],
         "Geographic/Americas/Canada": ["Canada", "British Columbia", "Manitoba", "Nova Scotia", "Ontario", "Quebec", "Alberta"],
         "Geographic/Americas/Latin America": ["Latin America", "Caribbean", "South America", "Argentina", "Barbados", "Belize", "Bolivia", "Brazil", "Chile", "Colombia", "Cuba", "Ecuador", "El Salvador", "Guatemala", "Haiti", "Mexico", "Panama", "Paraguay", "Peru", "Puerto Rico", "Trinidad and Tobago", "Uruguay", "Venezuela"],
-        "Geographic/Americas/USA": ["United States of America", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia (U.S. state)", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "Washington, D.C.", "West Virginia", "Wisconsin", "Wyoming"]
+        "Geographic/Americas/USA": ["United States of America", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia (U.S. state)", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "Washington, D.C.", "West Virginia", "Wisconsin", "Wyoming"],
+        "Geographic/Unsorted": ["Islands"]
     };
     var afdcCategories = { "m": "Media and music", "o": "Organization, corporation, or product", "b": "Biographical", "s": "Society topics", "w": "Web or Internet", "g": "Games or sports", "t": "Science and technology", "f": "Fiction and the arts", "p": "Places and transportation", "i": "Indiscernible or unclassifiable topic", "u": "Not sorted yet" };
-    var ADVERTISEMENT = " ([[User:APerson/delsort|delsort.js]])";
+    var ADVERTISEMENT = " ([[User:Enterprisey/delsort|assisted]])";
 
     var currentAfdcCat = "";
 
     if ( mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/') != -1 &&
-         mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/Log/201') == -1) {
+         mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/Log/') == -1) {
         var portletLink = mw.util.addPortletLink('p-cactions', '#', 'Delsort', 'pt-delsort', 'Perform deletion sorting');
         $( portletLink ).click( function ( e ) {
             e.preventDefault();
