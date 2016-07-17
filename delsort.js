@@ -8,7 +8,7 @@
         "Arts": ["Arts", "Fictional elements", "Science fiction"],
         "Arts/Culinary": ["Food and drink", "Wine"],
         "Arts/Language": ["Language", "Journalism", "Literature", "Poetry"],
-        "Arts/Performing": ["Albums and songs", "Film", "Music", "Radio", "Television", "Theatre"],
+        "Arts/Performing": ["Albums and songs", "Dance", "Film", "Music", "Radio", "Television", "Theatre"],
         "Arts/Visual arts": ["Visual arts", "Architecture", "Fashion", "Photography"],
         "Arts/Comics and animation": ["Comics and animation", "Anime and manga", "Webcomics"],
         "Places of interest": ["Shopping malls", "Museums and libraries", "Schools"],
