@@ -12,7 +12,7 @@
         "Arts/Visual arts": ["Visual arts", "Architecture", "Fashion", "Photography"],
         "Arts/Comics and animation": ["Comics and animation", "Anime and manga", "Webcomics"],
         "Places of interest": ["Shopping malls", "Museums and libraries", "Schools"],
-        "Topical": ["Advertising", "Animal", "Aviation", "Bibliographies", "Bilateral relations", "Business", "Companies", "Conservatism", "Conspiracy theories", "Crime", "Disability", "Education", "Environment", "Ethnic groups", "Events", "Firearms", "Games", "Health and fitness", "History", "Law", "Logic", "Magic", "Management", "Medicine", "Military", "News media", "Organisms", "Organizations", "Paranormal", "Philosophy", "Piracy", "Politics", "Sexuality and gender", "Terrorism", "Transportation", "Video games"],
+        "Topical": ["Advertising", "Animal", "Aviation", "Bibliographies", "Bilateral relations", "Business", "Companies", "Conservatism", "Conspiracy theories", "Crime", "Disability", "Education", "Environment", "Ethnic groups", "Events", "Firearms", "Games", "Geography", "Health and fitness", "History", "Law", "Logic", "Magic", "Management", "Medicine", "Military", "News media", "Organisms", "Organizations", "Paranormal", "Philosophy", "Piracy", "Politics", "Sexuality and gender", "Terrorism", "Transportation", "Video games"],
         "Topical/Science": ["Science", "Astronomy", "Behavioural science", "Social science", "Mathematics"],
         "Topical/Religion": ["Religion", "Atheism", "Bible", "Buddhism", "Christianity", "Islam", "Judaism", "Hinduism", "Paganism", "Sikhism", "Spirituality"],
         "Topical/Technology": ["Technology", "Computing", "Internet", "Software", "Websites"],
