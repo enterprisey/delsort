@@ -1,11 +1,10 @@
 """
-upload.py: upload delsort to a wiki
+Usage:
+python scripts/upload.py SITE TARGET USERNAME
 
-Run from the project root directory.
-
-Usage: python scripts/upload.py SITE TARGET USERNAME [PASSWORD]
-
-Uploads the file named "delsort.js" to the page TARGET on SITE, using the acccount for USERNAME. If PASSWORD isn't specified, it will be prompted for.
+SITE: enwiki or testwiki
+TARGET: the page on SITE where the script will be uploaded
+USERNAME: the account to make the edit under
 """
 import datetime
 import getpass
@@ -19,7 +18,6 @@ import git
 from wikitools import page
 from wikitools import wiki
 
-USAGE = "Usage: python scripts/upload.py SITE TARGET USERNAME [PASSWORD]"
 API_PAGES = {"enwiki": "https://en.wikipedia.org/w/api.php",
              "testwiki": "https://test.wikipedia.org/w/api.php"}
 HEADER = "/* Uploaded from the Git repo @ {} (branch {}) */\n"
@@ -27,11 +25,11 @@ SUMMARY = "Updating delsort: {} @ {}"
 
 if len(sys.argv) < 4:
     print(colored.yellow("Incorrect number of arguments supplied."))
-    print(USAGE)
+    print(__doc__)
     sys.exit(1)
 
 if "--help" in sys.argv:
-    print(USAGE)
+    print(__doc__)
     sys.exit(0)
 
 site_name = sys.argv[1]
