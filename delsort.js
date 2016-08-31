@@ -16,7 +16,7 @@
         "Topical/Science": ["Science", "Astronomy", "Behavioural science", "Social science", "Mathematics"],
         "Topical/Religion": ["Religion", "Atheism", "Bible", "Buddhism", "Christianity", "Islam", "Judaism", "Hinduism", "Paganism", "Sikhism", "Spirituality"],
         "Topical/Technology": ["Technology", "Computing", "Internet", "Software", "Websites"],
-        "Topical/Culture": ["Fashion", "Popular culture"],
+        "Topical/Culture": ["Beauty pageants", "Fashion", "Popular culture"],
         "Topical/Sports": ["Sports", "American football", "Baseball", "Basketball", "Bodybuilding", "Cricket", "Cycling", "Football", "Golf", "Ice hockey", "Rugby union", "Softball", "Martial arts", "Wrestling"],
         "Wikipedia page type": ["Disambiguations", "Lists"],
         "Geographic/Africa": ["Africa", "Egypt", "Ethiopia", "Ghana", "Kenya", "Laos", "Mauritius", "Morocco", "Nigeria", "Somalia", "South Africa", "Zimbabwe"],
