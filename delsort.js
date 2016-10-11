@@ -13,7 +13,7 @@
         "Arts/Comics and animation": ["Comics and animation", "Anime and manga", "Webcomics"],
         "Places of interest": ["Shopping malls", "Museums and libraries", "Schools"],
         "Topical": ["Animal", "Bilateral relations", "Business", "Conservatism", "Conspiracy theories", "Crime", "Disability", "Discrimination", "Education", "Ethnic groups", "Events", "Games", "Health and fitness", "History", "Law", "Military", "Organizations", "Paranormal", "Piracy", "Politics", "Terrorism"],
-		"Topical/Buniness": ["Business", "Advertising", "Companies", "Management"],
+        "Topical/Business": ["Business", "Advertising", "Companies", "Management"],
         "Topical/Culture": ["Beauty pageants", "Fashion", "Popular culture", "Sexuality and gender"],
         "Topical/Religion": ["Religion", "Atheism", "Bible", "Buddhism", "Christianity", "Islam", "Judaism", "Hinduism", "Paganism", "Sikhism", "Spirituality"],
         "Topical/Science": ["Science", "Archaeology", "Astronomy", "Behavioural science", "Economics", "Environment", "Geography", "Mathematics", "Medicine", "Organisms", "Social science", "Transportation"],
