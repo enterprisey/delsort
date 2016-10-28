@@ -4,7 +4,7 @@
     mw.loader.load( "mediawiki.ui.input", "text/css" );
 
     var delsortCategories = {
-        "People": ["People", "Academics and educators", "Actors and filmmakers", "Artists", "Authors", "Bands and musicians", "Businesspeople", "Politicians", "Sportspeople", "Lists of people"],
+        "People": ["People", "Academics and educators", "Actors and filmmakers", "Artists", "Authors", "Bands and musicians", "Businesspeople", "Politicians", "Sportspeople", "Women", "Lists of people"],
         "Arts": ["Arts", "Fictional elements", "Science fiction"],
         "Arts/Culinary": ["Food and drink", "Wine"],
         "Arts/Language": ["Language", "Academic journals", "Bibliographies", "Journalism", "Literature", "Logic", "News media", "Philosophy", "Poetry"],
