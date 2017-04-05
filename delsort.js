@@ -269,6 +269,11 @@
         // When everything's done, say something
         $.when.apply( $, deferreds ).then( function () {
 
+            // Call the done hook
+            if( window.delsortDoneHook ) {
+                window.delsortDoneHook();
+            }
+
             // We're done!
             $( "#delsort-title" )
                 .text( "Done " + ( changingAfdcCat ? "updating the discussion's AFDC category and " : "" ) + "sorting discussion into " + categoryTitleComponent + "." );
