@@ -29,7 +29,7 @@
         "Geographic/Europe/United Kingdom": ["United Kingdom", "England", "Northern Ireland", "Scotland", "Wales"],
         "Geographic/Oceania": ["Oceania", "Antarctica", "Australia", "New Zealand"],
         "Geographic/Americas/Canada": ["Canada", "British Columbia", "Manitoba", "Nova Scotia", "Ontario", "Quebec", "Alberta"],
-        "Geographic/Americas/Latin America": ["Latin America", "Caribbean", "South America", "Argentina", "Barbados", "Belize", "Bolivia", "Brazil", "Chile", "Colombia", "Cuba", "Ecuador", "El Salvador", "Guatemala", "Haiti", "Mexico", "Panama", "Paraguay", "Peru", "Puerto Rico", "Trinidad and Tobago", "Uruguay", "Venezuela"],
+        "Geographic/Americas/Latin America": ["Latin America", "Caribbean", "South America", "Argentina", "Barbados", "Belize", "Bolivia", "Brazil", "Chile", "Colombia", "Cuba", "Ecuador", "El Salvador", "Guatemala", "Haiti", "Mexico", "Panama", "Paraguay", "Peru", "Puerto Rico", "Trinidad and Tobago", "Uruguay", "Venezuela", "Grenada"],
         "Geographic/Americas/USA": ["United States of America", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia (U.S. state)", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "Washington, D.C.", "West Virginia", "Wisconsin", "Wyoming"],
         "Geographic/Unsorted": ["Islands"]
     };
