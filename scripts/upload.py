@@ -1,91 +1,92 @@
 """
-Usage:
-python scripts/upload.py SITE TARGET USERNAME
+run `python upload.py --help` for usage
 
-SITE: enwiki or testwiki
-TARGET: the page on SITE where the script will be uploaded
-USERNAME: the account to make the edit under
+requires GitPython
 """
+import argparse
+import base64
 import datetime
 import getpass
-import os.path
+import os
 import re
-import sys
-
-from clint.textui import colored
-from clint.textui import prompt
 import git
-from wikitools import page
-from wikitools import wiki
+import pywikibot
 
-API_PAGES = {"enwiki": "https://en.wikipedia.org/w/api.php",
-             "testwiki": "https://test.wikipedia.org/w/api.php"}
-HEADER = "/* Uploaded from the Git repo @ {} (branch {}) */\n"
-SUMMARY = "Updating delsort: {} @ {}"
+SUMMARY = "Updating {} ({} @ {})"
+SCRIPT_NAME = "reply-link"
 
-if len(sys.argv) < 4:
-    print(colored.yellow("Incorrect number of arguments supplied."))
-    print(__doc__)
-    sys.exit(1)
 
-if "--help" in sys.argv:
-    print(__doc__)
-    sys.exit(0)
+def get_branch_and_hash():
+    """Gets the branch that the repo is currently on, as well as the hash
+    of the most recent commit to it"""
+    repo = git.Repo(os.getcwd())
+    branch, sha1 = "", ""
+    try:
+        branch = repo.active_branch
+        sha1 = branch.commit.hexsha
+    except AttributeError:
+        branch = next(x for x in repo.branches if x.name == repo.active_branch)
+        sha1 = branch.commit.id
+    return branch, sha1
 
-site_name = sys.argv[1]
-if not site_name in API_PAGES:
-    print(colored.yellow("Unrecognized wiki '%s'. Must be 'enwiki' or" +
-                  " 'testwiki'" % site_name))
-    sys.exit(1)
-site = wiki.Wiki(API_PAGES[site_name])
 
-root = sys.argv[2]
-username = sys.argv[3]
-
-if len(sys.argv) > 4:
-    password = sys.argv[4]
-else:
-    password = getpass.getpass("Password for {} on {}: "
-                               .format(username, site_name))
-
-login_result = site.login(username, password)
-if not login_result:
-    print(colored.yellow("Error logging in."))
-    sys.exit(1)
-else:
-    print("Successfully logged in.")
-target = page.Page(site, title=root)
-
-if not os.path.isfile("delsort.js"):
-    print(colored.yellow("Couldn't find a file called 'delsort.js' in the project home."))
-    sys.exit(1)
-
-repo = git.Repo(os.getcwd())
-branch = repo.active_branch
-sha1 = branch.commit.hexsha
-header = HEADER.format(sha1, branch)
-print("Made a header.")
-
-if site_name == "enwiki" and root == "User:Enterprisey/delsort.js" and str(branch) == "master":
+def update_doc_time(site: pywikibot.Site, script_root: str):
+    """Update the time on the docs."""
     print("Updating script documentation page.")
-    docs = page.Page(site, title="User:Enterprisey/delsort")
-    docs_wikitext = docs.getWikiText()
-    date = re.search("start date and age\|\d+\|\d+\|\d+", docs_wikitext).group(0)
+    page = pywikibot.Page(site, title="User:Enterprisey/" + SCRIPT_NAME)
+    docs_wikitext = page.get()
+    date = re.search(r"start date and age\|\d+\|\d+\|\d+",
+            docs_wikitext).group(0)
     now = datetime.datetime.now()
-    revised_date = "start date and age|%d|%d|%d" % (now.year, now.month, now.day)
-    new_wikitext = docs_wikitext.replace(date, revised_date)
-    result = docs.edit(text=new_wikitext, summary="Updating delsort \"updated\" time")
-    if result["edit"]["result"] == "Success":
-        print(colored.green("Success!") + " Updated the \"updated\" time on the documentation.")
-    else:
-        print(colored.red("Error updating the \"updated\" time: ") + result)
+    revised_date = "start date and age|%d|%d|%d" %\
+            (now.year, now.month, now.day)
+    page.text = docs_wikitext.replace(date, revised_date)
+    def save_callback(_page, e):
+        if e:
+            print("Error updating the \"updated\" time: " + str(e))
+        else:
+            print("Success! Updated the \"updated\" time on the documentation")
+    page.save(summary="Updating {} \"updated\" time".format(SCRIPT_NAME),
+            callback=save_callback)
 
-with open("delsort.js", "r") as delsort:
-    new_text = header + delsort.read()
-    edit_summary = SUMMARY.format(branch, sha1[:7])
-    print("Uploading delsort...")
-    result = target.edit(text=new_text, summary=edit_summary)
-    if result["edit"]["result"] == "Success":
-        print(colored.green("Success!") + " Uploaded delsort to " + root)
-    else:
-        print(colored.red("Error uploading delsort: ") + result)
+
+def main():
+    """The main function"""
+
+    # Parse the arguments
+    parser = argparse.ArgumentParser(prog="upload.py",
+            description="Upload reply-link")
+    parser.add_argument("-t", "--test", action="store_true",
+            help="Upload to testwiki (default: upload to enwiki)")
+    parser.add_argument("-d", "--dev", action="store_true",
+            help="On the wiki, filename will have a -dev suffix")
+    args = parser.parse_args()
+
+    wiki = "test" if args.test else "en"
+
+    site = pywikibot.Site(wiki, "wikipedia")
+    site.login()
+    username = site.user()
+    script_root = "User:{}/{}".format(username, SCRIPT_NAME)
+    title = script_root + ("-dev" if args.dev else "") + ".js"
+    print("Uploading to {} on {}.wikipedia.org...".format(title, wiki))
+    script_page = pywikibot.Page(site, title=title)
+
+    local_script = SCRIPT_NAME + ".js"
+    print("Reading from {}...".format(local_script))
+    with open(local_script, "r") as target_file:
+        script_page.text = target_file.read()
+        branch, sha1 = get_branch_and_hash()
+        def save_callback(_page, e):
+            if not e:
+                print("Successfully uploaded {}!".format(SCRIPT_NAME))
+
+                # If this was the main update script, update the docs
+                if wiki == "en" and not args.dev:
+                    update_doc_time(site, script_root)
+        script_page.save(summary=SUMMARY.format(local_script,
+                sha1[:7], branch), callback=save_callback)
+
+
+if __name__ == "__main__":
+    main()
