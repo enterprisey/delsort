@@ -38,9 +38,9 @@
 
     var currentAfdcCat = "";
 
-    if ( mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/') != -1 &&
-         mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/Log/') == -1) {
-        var portletLink = mw.util.addPortletLink('p-cactions', '#', 'Delsort', 'pt-delsort', 'Perform deletion sorting');
+    if ( mw.config.get( "wgPageName" ).indexOf("Wikipedia:Articles_for_deletion/") != -1 &&
+         mw.config.get( "wgPageName" ).indexOf("Wikipedia:Articles_for_deletion/Log/") == -1) {
+        var portletLink = mw.util.addPortletLink("p-cactions", "#", "Delsort", "pt-delsort", "Perform deletion sorting");
         $( portletLink ).click( function ( e ) {
             e.preventDefault();
 
@@ -48,11 +48,11 @@
             var validateCustomCat = function ( container ) {
                 var categoryName = container.children( "input" ).first().val();
                 $.getJSON(
-                    mw.util.wikiScript('api'),
+                    mw.util.wikiScript("api"),
                     {
-                        format: 'json',
-                        action: 'query',
-                        prop: 'pageprops',
+                        format: "json",
+                        action: "query",
+                        prop: "pageprops",
                         titles: "Wikipedia:WikiProject Deletion sorting/" + categoryName
                     }
                 ).done( function ( data ) {
@@ -71,7 +71,7 @@
                         }
                         container.children( ".category-status" ).empty()
                             .append( $( "<img>", { "src": imageSrc,
-                                                   "style": "padding: 0 5px; width: 20px; height: 20px" } ) )
+                                "style": "padding: 0 5px; width: 20px; height: 20px" } ) )
                             .append( text );
                     };
                     if( data && data.query && data.query.pages ) {
@@ -101,7 +101,7 @@
                     .append( $( "<span>" ).addClass( "category-status" ) )
                     .append( " (" )
                     .append( $( "<img>", { "src": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Crystal_128_reload.svg",
-                                           "style": "width: 15px; height: 15px; cursor: pointer" } )
+                        "style": "width: 15px; height: 15px; cursor: pointer" } )
                              .click( function ( e ) {
                                  validateCustomCat( $( this ).parent() );
                              } ) )
@@ -185,7 +185,7 @@
                             categories = categories.filter( Boolean ); // remove empty strings
                             
                             // Obtain the target AFDC category, brought to you by http://stackoverflow.com/a/24886483/1757964
-                            var afdcTarget = document.querySelector('input[name="afdc"]:checked').value;
+                            var afdcTarget = document.querySelector("input[name='afdc']:checked").value;
                             
                             // Actually do the delsort
                             saveChanges( categories, afdcTarget );
@@ -199,19 +199,19 @@
      */
     function autofillForm() {
         $.getJSON(
-            mw.util.wikiScript('api'),
+            mw.util.wikiScript("api"),
             {
-                format: 'json',
-                action: 'query',
-                prop: 'revisions',
-                rvprop: 'content',
+                format: "json",
+                action: "query",
+                prop: "revisions",
+                rvprop: "content",
                 rvlimit: 1,
                 titles: mw.config.get( "wgPageName" )
             }
         ).done( function ( data ) {
             try {
-                var pageId = Object.keys(data.query.pages)[0];
-                wikitext = data.query.pages[pageId].revisions[0]['*'];
+                var pageId = Object.keys(data.query.pages)[0],
+                    wikitext = data.query.pages[pageId].revisions[0]["*"];
 
                 var regexMatch = /REMOVE THIS TEMPLATE WHEN CLOSING THIS AfD(?:\|(.*))?}}/.exec( wikitext );
                 if ( regexMatch ) {
@@ -306,19 +306,19 @@
             wikitext;
 
         $.getJSON(
-            mw.util.wikiScript('api'),
+            mw.util.wikiScript("api"),
             {
-                format: 'json',
-                action: 'query',
-                prop: 'revisions',
-                rvprop: 'content',
+                format: "json",
+                action: "query",
+                prop: "revisions",
+                rvprop: "content",
                 rvlimit: 1,
-                titles: mw.config.get( 'wgPageName' )
+                titles: mw.config.get( "wgPageName" )
             }
         ).done( function ( data ) {
             try {
                 var pageId = Object.keys(data.query.pages)[0];
-                wikitext = data.query.pages[pageId].revisions[0]['*'];
+                wikitext = data.query.pages[pageId].revisions[0]["*"];
 
                 statusElement.html( "Processing wikitext..." );
 
@@ -343,19 +343,19 @@
 
                 var catPlural = ( cats.length === 1 ) ? "" : "s";
                 $.ajax( {
-                    url: mw.util.wikiScript( 'api' ),
-                    type: 'POST',
-                    dataType: 'json',
+                    url: mw.util.wikiScript( "api" ),
+                    type: "POST",
+                    dataType: "json",
                     data: {
-                        format: 'json',
-                        action: 'edit',
-                        title: mw.config.get( 'wgPageName' ),
+                        format: "json",
+                        action: "edit",
+                        title: mw.config.get( "wgPageName" ),
                         summary: "Updating nomination page with notices" + ( changingAfdcCat ? " and new AFDC cat" : "" ) + ADVERTISEMENT,
-                        token: mw.user.tokens.get( 'editToken' ),
+                        token: mw.user.tokens.get( "editToken" ),
                         text: wikitext
                     }
                 } ).done ( function ( data ) {
-                    if ( data && data.edit && data.edit.result && data.edit.result == 'Success' ) {
+                    if ( data && data.edit && data.edit.result && data.edit.result == "Success" ) {
                         statusElement.html( cats.length + " notice" + catPlural + " placed on the discussion!" );
                         if ( changingAfdcCat ) {
                             if ( currentAfdcCat ) {
@@ -393,7 +393,7 @@
     function createDelsortNotices( cats ) {
         var appendText = "";
         cats.forEach( function ( cat ) {
-                appendText += "\n\{\{subst:Delsort|" + cat + "|\~\~\~\~\}\}";
+            appendText += "\n\{\{subst:Delsort|" + cat + "|\~\~\~\~\}\}";
         } );
         return appendText;
     }
@@ -407,45 +407,55 @@
         // Make a status element just for this category
         var statusElement = showStatus( "Listing this discussion at DELSORT/" +
                                         cat + "..." );
+
+        // Clarify our watchlist behavior for this edit
+        var allowedWatchlistBehaviors = ["watch", "unwatch", "preferences",
+                "nochange"];
+        var watchlistBehavior = "nochange"; // no watchlist change by default
+        if( window.delsortWatchlist && allowedWatchlistBehaviors.indexOf(
+                window.delsortWatchlist.toLowerCase() ) >= 0 ) {
+            watchlistBehavior = window.delsortWatchlist.toLowerCase();
+        }
         
         // First, get the current wikitext for the DELSORT page
         var wikitext;
         $.getJSON(
-            mw.util.wikiScript('api'),
+            mw.util.wikiScript("api"),
             {
-                format: 'json',
-                action: 'query',
-                prop: 'revisions',
-                rvprop: 'content',
+                format: "json",
+                action: "query",
+                prop: "revisions",
+                rvprop: "content",
                 rvlimit: 1,
                 titles: "Wikipedia:WikiProject Deletion sorting/" + cat
             }
         ).done( function ( data ) {
             try {
                 var pageId = Object.keys(data.query.pages)[0];
-                wikitext = data.query.pages[pageId].revisions[0]['*'];
+                wikitext = data.query.pages[pageId].revisions[0]["*"];
                 
                 statusElement.html( "Got the DELSORT/" + cat + " listing wikitext, processing..." );
                 
                 // Actually edit the content to include the new listing
-                var newDelsortContent = wikitext.replace('directly below this line -->', 'directly below this line -->\n\{\{' + mw.config.get('wgPageName') + '\}\}');
+                var newDelsortContent = wikitext.replace("directly below this line -->", "directly below this line -->\n\{\{" + mw.config.get("wgPageName") + "\}\}");
                 
                 // Then, replace the DELSORT listing with the new content
-                var listTitle = 'Wikipedia:WikiProject Deletion sorting/' + cat;
+                var listTitle = "Wikipedia:WikiProject Deletion sorting/" + cat;
                 $.ajax( {
-                    url: mw.util.wikiScript( 'api' ),
-                    type: 'POST',
-                    dataType: 'json',
+                    url: mw.util.wikiScript( "api" ),
+                    type: "POST",
+                    dataType: "json",
                     data: {
-                        format: 'json',
-                        action: 'edit',
+                        format: "json",
+                        action: "edit",
                         title: listTitle,
-                        summary: "Listing [[" + mw.config.get('wgPageName') + "]]" + ADVERTISEMENT,
-                        token: mw.user.tokens.get( 'editToken' ),
-                        text: newDelsortContent
+                        summary: "Listing [[" + mw.config.get("wgPageName") + "]]" + ADVERTISEMENT,
+                        token: mw.user.tokens.get( "editToken" ),
+                        text: newDelsortContent,
+                        watchlist: watchlistBehavior
                     }
                 } ).done ( function ( data ) {
-                    if ( data && data.edit && data.edit.result && data.edit.result == 'Success' ) {
+                    if ( data && data.edit && data.edit.result && data.edit.result == "Success" ) {
                         statusElement.html( "Listed page at <a href=" + mw.util.getUrl( listTitle ) + ">the " + cat + " deletion sorting list</a>!" );
                         deferred.resolve();
                     } else {
