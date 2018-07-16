@@ -37,6 +37,7 @@
     var ADVERTISEMENT = " ([[User:Enterprisey/delsort|assisted]])";
 
     var currentAfdcCat = "";
+    var currentDelsortCategories = [];
 
     if ( mw.config.get( "wgPageName" ).indexOf("Wikipedia:Articles_for_deletion/") != -1 &&
          mw.config.get( "wgPageName" ).indexOf("Wikipedia:Articles_for_deletion/Log/") == -1) {
@@ -109,7 +110,7 @@
                     .append( $( "<button>" )
                              .addClass( "mw-ui-button mw-ui-destructive mw-ui-quiet" )
                              .text( "Remove" )
-                             .click( function ( e ) {
+                             .click( function () {
                                  $( this ).parent().remove();
                              } ) );
             };
@@ -133,7 +134,7 @@
 '  <button style="position: absolute; top: 5px; right: 5px;" id="close-button" class="mw-ui-button mw-ui-destructive mw-ui-quiet">Close</button>' +
 '</div>' );
             $( "#add-custom-button" ).click( addCustomField );
-            $( "#close-button" ).click( function ( e ) { $( "#delsort" ).remove(); } );
+            $( "#close-button" ).click( function () { $( "#delsort" ).remove(); } );
 
             var afdcHtml = "";
             Object.keys( afdcCategories ).forEach( function ( code, i ) {
@@ -155,13 +156,39 @@
                 $.each( categories, function ( index, category ) {
                     group.append( $( "<option>" )
                                   .val( category )
-                                  .text( category ) );
+                                  .text( category )
+                                  .addClass( "delsort-category" ) );
                 } );
             } );
 
-            // Set up the chosen one (some code stolen from http://stackoverflow.com/a/27445788)
-            $( "#delsort select" ).chosen();
-            $( "#delsort .chzn-container" ).css( "text-align", "left" );
+            getWikitext( mw.config.get( "wgPageName" ) ).done( function ( wikitext ) {
+                autofillAfdc( wikitext );
+
+                // Autofill the delsort box
+                var DELSORT_RE = /:<small class="delsort-notice">(.+?)<\/small>/g;
+                var DELSORT_LIST_RE = /\[\[Wikipedia:WikiProject Deletion sorting\/(.+?)\|.+?\]\]/;
+                var delsortMatch;
+                var delsortListMatch;
+                do {
+                    delsortMatch = DELSORT_RE.exec( wikitext );
+                    if( delsortMatch !== null ) {
+                        delsortListMatch = DELSORT_LIST_RE.exec( delsortMatch[1] );
+                        if( delsortListMatch !== null ) {
+                            currentDelsortCategories.push( delsortListMatch[1] );
+                            var delsortOption = document.querySelector( "option.delsort-category[value='" + delsortListMatch[1] + "']" );
+                            if( delsortOption ) {
+                                delsortOption.selected = true;
+                            }
+                        }
+                    }
+                } while( delsortMatch );
+            } ).always( function () {
+
+                // We always want to initialize the special chosen.js select box
+                // (some code stolen from http://stackoverflow.com/a/27445788)
+                $( "#delsort select" ).chosen();
+                $( "#delsort .chzn-container" ).css( "text-align", "left" );
+            } );
 
             // Add the button that triggers sorting
             $( "#delsort" ).append( $( "<div>" )
@@ -171,7 +198,7 @@
                         .addClass( "mw-ui-progressive" )
                         .attr( "id", "sort-button" )
                         .text( "Save changes" )
-                        .click( function ( e ) {
+                        .click( function () {
 
                             // Make a status list
                             $( "#delsort" ).append( $( "<ul> ")
@@ -183,6 +210,18 @@
                                 categories.push( $( element ).val() );
                             } );
                             categories = categories.filter( Boolean ); // remove empty strings
+
+                            // Only allow categories that aren't already there
+                            var preCurrFilterLength = categories.length;
+                            categories = categories.filter( function ( elem ) {
+                                return currentDelsortCategories.indexOf( elem ) < 0;
+                            } );
+                            if( categories.length > preCurrFilterLength ) {
+                                showStatus( ( categories.length - preCurrFilterLength ) +
+                                    " " + ( categories.length - preCurrFilterLength === 1 ?
+                                        "category was" : "categories were" ) +
+                                    "already on the page, and thus not added" );
+                            }
                             
                             // Obtain the target AFDC category, brought to you by http://stackoverflow.com/a/24886483/1757964
                             var afdcTarget = document.querySelector("input[name='afdc']:checked").value;
@@ -190,44 +229,25 @@
                             // Actually do the delsort
                             saveChanges( categories, afdcTarget );
                         } ) ) );
-            autofillForm();
         } );
     } // End if ( mw.config.get( "wgPageName" ).indexOf('Wikipedia:Articles_for_deletion/') ... )
 
     /*
-     * Autofills some of the form data based on parsing the current discussion's wikitext.
+     * Autofills the AFDC radio button group based on the current
+     * page's wikitext
      */
-    function autofillForm() {
-        $.getJSON(
-            mw.util.wikiScript("api"),
-            {
-                format: "json",
-                action: "query",
-                prop: "revisions",
-                rvprop: "content",
-                rvlimit: 1,
-                titles: mw.config.get( "wgPageName" )
-            }
-        ).done( function ( data ) {
-            try {
-                var pageId = Object.keys(data.query.pages)[0],
-                    wikitext = data.query.pages[pageId].revisions[0]["*"];
-
-                var regexMatch = /REMOVE THIS TEMPLATE WHEN CLOSING THIS AfD(?:\|(.*))?}}/.exec( wikitext );
-                if ( regexMatch ) {
-                    var templateParameter = regexMatch[1];
-                    if ( templateParameter ) {
-                        currentAfdcCat = templateParameter;
-                        if ( templateParameter.length === 1 ) {
-                            var currentClass = templateParameter.toLowerCase();
-                            $( "#afdc-" + currentClass ).prop( "checked", true );
-                        }
-                    }
+    function autofillAfdc( wikitext ) {
+        var regexMatch = /REMOVE THIS TEMPLATE WHEN CLOSING THIS AfD(?:\|(.*))?}}/.exec( wikitext );
+        if ( regexMatch ) {
+            var templateParameter = regexMatch[1];
+            if ( templateParameter ) {
+                currentAfdcCat = templateParameter;
+                if ( templateParameter.length === 1 ) {
+                    var currentClass = templateParameter.toLowerCase();
+                    $( "#afdc-" + currentClass ).prop( "checked", true );
                 }
-            } catch ( e ) {
-                console.log( "Error autofilling: " + e.message );
             }
-        } );
+        }
     }
 
     /*
@@ -305,21 +325,8 @@
             statusElement = showStatus( "Updating the discussion page..." ),
             wikitext;
 
-        $.getJSON(
-            mw.util.wikiScript("api"),
-            {
-                format: "json",
-                action: "query",
-                prop: "revisions",
-                rvprop: "content",
-                rvlimit: 1,
-                titles: mw.config.get( "wgPageName" )
-            }
-        ).done( function ( data ) {
+        getWikitext( mw.config.get( "wgPageName" ) ).done( function ( wikitext ) {
             try {
-                var pageId = Object.keys(data.query.pages)[0];
-                wikitext = data.query.pages[pageId].revisions[0]["*"];
-
                 statusElement.html( "Processing wikitext..." );
 
                 // Process wikitext
@@ -418,22 +425,9 @@
         }
         
         // First, get the current wikitext for the DELSORT page
-        var wikitext;
-        $.getJSON(
-            mw.util.wikiScript("api"),
-            {
-                format: "json",
-                action: "query",
-                prop: "revisions",
-                rvprop: "content",
-                rvlimit: 1,
-                titles: "Wikipedia:WikiProject Deletion sorting/" + cat
-            }
-        ).done( function ( data ) {
+        getWikitext( "Wikipedia:WikiProject Deletion sorting/" + cat )
+            .done( function ( wikitext ) {
             try {
-                var pageId = Object.keys(data.query.pages)[0];
-                wikitext = data.query.pages[pageId].revisions[0]["*"];
-                
                 statusElement.html( "Got the DELSORT/" + cat + " listing wikitext, processing..." );
                 
                 // Actually edit the content to include the new listing
@@ -469,7 +463,7 @@
             } catch ( e ) {
                 statusElement.html( "While getting the DELSORT/" + cat + " content, there was an error." );
                 console.log( "DELSORT content request error: " + e.message );
-                console.log( "DELSORT content request response: " + JSON.stringify( data ) );
+                //console.log( "DELSORT content request response: " + JSON.stringify( data ) );
                 deferred.reject();
             }
         } ).fail( function () {
@@ -477,6 +471,26 @@
             deferred.reject();
         } );
         return deferred;
+    }
+
+    /**
+     * Gets the wikitext of a page with the given title (namespace required).
+     */
+    function getWikitext( title ) {
+        return $.getJSON(
+            mw.util.wikiScript("api"),
+            {
+                format: "json",
+                action: "query",
+                prop: "revisions",
+                rvprop: "content",
+                rvlimit: 1,
+                titles: title
+            }
+        ).then( function ( data ) {
+            var pageId = Object.keys(data.query.pages)[0];
+            return data.query.pages[pageId].revisions[0]["*"];
+        } );
     }
 }( jQuery, mediaWiki ) );
 //</nowiki>
