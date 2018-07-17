@@ -182,13 +182,16 @@
                         }
                     }
                 } while( delsortMatch );
-            } ).always( function () {
 
-                // We always want to initialize the special chosen.js select box
-                // (some code stolen from http://stackoverflow.com/a/27445788)
-                $( "#delsort select" ).chosen();
-                $( "#delsort .chzn-container" ).css( "text-align", "left" );
+                // Now that we've updated the underlying <select>, ask Chosen to
+                // update the visible search box
+                $( "#delsort select" ).trigger( "chosen:updated" );
             } );
+
+            // Initialize the special chosen.js select box
+            // (some code stolen from http://stackoverflow.com/a/27445788)
+            $( "#delsort select" ).chosen();
+            $( "#delsort .chzn-container" ).css( "text-align", "left" );
 
             // Add the button that triggers sorting
             $( "#delsort" ).append( $( "<div>" )
