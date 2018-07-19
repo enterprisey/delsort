@@ -33,6 +33,9 @@
         "Geographic/Americas/USA": ["United States of America", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia (U.S. state)", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "Washington, D.C.", "West Virginia", "Wisconsin", "Wyoming"],
         "Geographic/Unsorted": ["Islands"]
     };
+    var delsortSpecialNotices = {
+        "Artists": "" // TODO
+    }
     var afdcCategories = { "m": "Media and music", "o": "Organization, corporation, or product", "b": "Biographical", "s": "Society topics", "w": "Web or Internet", "g": "Games or sports", "t": "Science and technology", "f": "Fiction and the arts", "p": "Places and transportation", "i": "Indiscernible or unclassifiable topic", "u": "Not sorted yet" };
     var ADVERTISEMENT = " ([[User:Enterprisey/delsort|assisted]])";
 
@@ -216,16 +219,9 @@
                             categories = removeDups( categories );
 
                             // Only allow categories that aren't already there
-                            var preCurrFilterLength = categories.length;
                             categories = categories.filter( function ( elem ) {
                                 return currentDelsortCategories.indexOf( elem ) < 0;
                             } );
-                            if( categories.length < preCurrFilterLength ) {
-                                showStatus( ( preCurrFilterLength - categories.length ) +
-                                    " " + ( preCurrFilterLength - categories.length === 1 ?
-                                        "category was" : "categories were" ) +
-                                    " already on the page, and thus not added" );
-                            }
                             
                             // Obtain the target AFDC category, brought to you by http://stackoverflow.com/a/24886483/1757964
                             var afdcTarget = document.querySelector("input[name='afdc']:checked").value;
