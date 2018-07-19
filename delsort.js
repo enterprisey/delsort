@@ -213,17 +213,18 @@
                                 categories.push( $( element ).val() );
                             } );
                             categories = categories.filter( Boolean ); // remove empty strings
+                            categories = removeDups( categories );
 
                             // Only allow categories that aren't already there
                             var preCurrFilterLength = categories.length;
                             categories = categories.filter( function ( elem ) {
                                 return currentDelsortCategories.indexOf( elem ) < 0;
                             } );
-                            if( categories.length > preCurrFilterLength ) {
-                                showStatus( ( categories.length - preCurrFilterLength ) +
-                                    " " + ( categories.length - preCurrFilterLength === 1 ?
+                            if( categories.length < preCurrFilterLength ) {
+                                showStatus( ( preCurrFilterLength - categories.length ) +
+                                    " " + ( preCurrFilterLength - categories.length === 1 ?
                                         "category was" : "categories were" ) +
-                                    "already on the page, and thus not added" );
+                                    " already on the page, and thus not added" );
                             }
                             
                             // Obtain the target AFDC category, brought to you by http://stackoverflow.com/a/24886483/1757964
@@ -325,8 +326,7 @@
     function postDelsortNoticesAndUpdateAfdc( cats, afdcTarget ) {
         var changingAfdcCat = currentAfdcCat.toLowerCase() !== afdcTarget,
             deferred = $.Deferred(),
-            statusElement = showStatus( "Updating the discussion page..." ),
-            wikitext;
+            statusElement = showStatus( "Updating the discussion page..." );
 
         getWikitext( mw.config.get( "wgPageName" ) ).done( function ( wikitext ) {
             try {
@@ -387,7 +387,6 @@
             } catch ( e ) {
                 statusElement.html( "While getting the current page content, there was an error." );
                 console.log( "Current page content request error: " + e.message );
-                console.log( "Current page content request response: " + JSON.stringify( data ) );
                 deferred.reject();
             }
         } ).fail( function () {
@@ -428,8 +427,7 @@
         }
         
         // First, get the current wikitext for the DELSORT page
-        getWikitext( "Wikipedia:WikiProject Deletion sorting/" + cat )
-            .done( function ( wikitext ) {
+        getWikitext( "Wikipedia:WikiProject Deletion sorting/" + cat ) .done( function ( wikitext ) {
             try {
                 statusElement.html( "Got the DELSORT/" + cat + " listing wikitext, processing..." );
                 
@@ -494,6 +492,17 @@
             var pageId = Object.keys(data.query.pages)[0];
             return data.query.pages[pageId].revisions[0]["*"];
         } );
+    }
+
+    /**
+     * Removes duplicates from an array.
+     */
+    function removeDups( arr ) {
+        var obj = {};
+        for( var i = 0; i < arr.length; i++ ) {
+            obj[arr[i]] = 0;
+        }
+        return Object.keys( obj );
     }
 }( jQuery, mediaWiki ) );
 //</nowiki>
