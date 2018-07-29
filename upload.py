@@ -45,7 +45,7 @@ def update_doc_time(site: pywikibot.Site, script_root: str):
         if e:
             print("Error updating the \"updated\" time: " + str(e))
         else:
-            print("Success! Updated the \"updated\" time on the documentation")
+            print("Success! Updated the \"updated\" time on the documentation.")
     page.save(summary="Updating {} \"updated\" time".format(SCRIPT_NAME),
             callback=save_callback)
 
