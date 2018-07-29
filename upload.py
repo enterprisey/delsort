@@ -33,7 +33,7 @@ def get_branch_and_hash():
 def update_doc_time(site: pywikibot.Site, script_root: str):
     """Update the time on the docs."""
     print("Updating script documentation page.")
-    page = pywikibot.Page(site, title=script_root)
+    page = pywikibot.Page(site, title="User:Enterprisey/"+SCRIPT_NAME)
     docs_wikitext = page.get()
     date = re.search(r"start date and age\|\d+\|\d+\|\d+",
             docs_wikitext).group(0)
