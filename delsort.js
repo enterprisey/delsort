@@ -12,7 +12,7 @@
         "Arts/Visual arts": ["Visual arts", "Architecture", "Fashion", "Photography"],
         "Arts/Comics and animation": ["Comics and animation", "Anime and manga", "Webcomics"],
         "Places of interest": ["Museums and libraries", "Shopping malls"],
-        "Topical": ["Animal", "Bilateral relations", "Business", "Conservatism", "Conspiracy theories", "Crime", "Disability", "Discrimination", "Ethnic groups", "Events", "Games", "Health and fitness", "History", "Law", "Military", "Organizations", "Paranormal", "Piracy", "Politics", "Terrorism"],
+        "Topical": ["Animal", "Bilateral relations", "Business", "Conservatism", "Conspiracy theories", "Crime", "Disability", "Discrimination", "Ethnic groups", "Events", "Games", "Health and fitness", "History", "Law", "Libertarianism", "Military", "Organizations", "Paranormal", "Piracy", "Politics", "Terrorism"],
         "Topical/Business": ["Business", "Advertising", "Companies", "Management", "Finance"],
         "Topical/Culture": ["Beauty pageants", "Fashion", "Mythology", "Popular culture", "Sexuality and gender"],
         "Topical/Education": ["Education", "Fraternities and sororities", "Schools"],
