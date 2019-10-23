@@ -357,7 +357,7 @@
                         action: "edit",
                         title: mw.config.get( "wgPageName" ),
                         summary: "Updating nomination page with notices" + ( changingAfdcCat ? " and new AFDC cat" : "" ) + ADVERTISEMENT,
-                        token: mw.user.tokens.get( "editToken" ),
+                        token: mw.user.tokens.get( "csrfToken" ),
                         text: wikitext
                     }
                 } ).done ( function ( data ) {
@@ -441,7 +441,7 @@
                         action: "edit",
                         title: listTitle,
                         summary: "Listing [[" + mw.config.get("wgPageName") + "]]" + ADVERTISEMENT,
-                        token: mw.user.tokens.get( "editToken" ),
+                        token: mw.user.tokens.get( "csrfToken" ),
                         text: newDelsortContent,
                         watchlist: watchlistBehavior
                     }
