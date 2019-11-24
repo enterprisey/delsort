@@ -5,7 +5,7 @@
 
     var delsortCategories = {
         "People": ["People", "Academics and educators", "Actors and filmmakers", "Artists", "Authors", "Bands and musicians", "Businesspeople", "Politicians", "Sportspeople", "Women", "Lists of people"],
-        "Arts": ["Arts", "Fictional elements", "Science fiction"],
+        "Arts": ["Arts", "Fictional elements", "Science fiction and fantasy"],
         "Arts/Culinary": ["Food and drink", "Wine"],
         "Arts/Language": ["Language", "Academic journals", "Bibliographies", "Journalism", "Literature", "Logic", "News media", "Philosophy", "Poetry"],
         "Arts/Performing": ["Albums and songs", "Dance", "Film", "Magic", "Music", "Radio", "Television", "Theatre", "Video games"],
@@ -440,6 +440,7 @@
                         format: "json",
                         action: "edit",
                         title: listTitle,
+                        redirect: true,
                         summary: "Listing [[" + mw.config.get("wgPageName") + "]]" + ADVERTISEMENT,
                         token: mw.user.tokens.get( "csrfToken" ),
                         text: newDelsortContent,
