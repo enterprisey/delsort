@@ -441,6 +441,7 @@
                         format: "json",
                         action: "edit",
                         title: listTitle,
+                        redirect: true,
                         summary: "Listing [[" + mw.config.get("wgPageName") + "]]" + ADVERTISEMENT,
                         token: mw.user.tokens.get( "csrfToken" ),
                         text: newDelsortContent,
