@@ -165,7 +165,7 @@
                 } );
             } );
 
-            getWikitext( mw.config.get( "wgPageName" ) ).done( function ( wikitext ) {
+            getWikitext( mw.config.get( "wgPageName" ) ).then( function ( wikitext ) {
                 autofillAfdc( wikitext );
 
                 // Autofill the delsort box
@@ -325,7 +325,7 @@
             deferred = $.Deferred(),
             statusElement = showStatus( "Updating the discussion page..." );
 
-        getWikitext( mw.config.get( "wgPageName" ) ).done( function ( wikitext ) {
+        getWikitext( mw.config.get( "wgPageName" ) ).then( function ( wikitext ) {
             try {
                 statusElement.html( "Processing wikitext..." );
 
@@ -408,8 +408,7 @@
      * Adds a listing at the DELSORT page for the category.
      */
     function listAtDelsort( cat ) {
-        var deferred = $.Deferred();
-        
+
         // Make a status element just for this category
         var statusElement = showStatus( "Listing this discussion at DELSORT/" +
                                         cat + "..." );
@@ -422,9 +421,26 @@
                 window.delsortWatchlist.toLowerCase() ) >= 0 ) {
             watchlistBehavior = window.delsortWatchlist.toLowerCase();
         }
+
+        var listTitle = "Wikipedia:WikiProject Deletion sorting/" + cat;
         
         // First, get the current wikitext for the DELSORT page
-        getWikitext( "Wikipedia:WikiProject Deletion sorting/" + cat ) .done( function ( wikitext ) {
+        return $.getJSON(
+            mw.util.wikiScript("api"),
+            {
+                format: "json",
+                action: "query",
+                prop: "revisions",
+                rvprop: "content",
+                rvslots: "main",
+                rvlimit: 1,
+                titles: listTitle,
+                redirects: "true",
+                formatversion: 2,
+            }
+        ).then( function ( data ) {
+            var wikitext = data.query.pages[0].revisions[0].slots.main.content;
+            var properTitle = data.query.pages[0].title;
             try {
                 statusElement.html( "Got the DELSORT/" + cat + " listing wikitext, processing..." );
                 
@@ -432,7 +448,6 @@
                 var newDelsortContent = wikitext.replace("directly below this line -->", "directly below this line -->\n\{\{" + mw.config.get("wgPageName") + "\}\}");
                 
                 // Then, replace the DELSORT listing with the new content
-                var listTitle = "Wikipedia:WikiProject Deletion sorting/" + cat;
                 $.ajax( {
                     url: mw.util.wikiScript( "api" ),
                     type: "POST",
@@ -440,8 +455,7 @@
                     data: {
                         format: "json",
                         action: "edit",
-                        title: listTitle,
-                        redirect: true,
+                        title: properTitle,
                         summary: "Listing [[" + mw.config.get("wgPageName") + "]]" + ADVERTISEMENT,
                         token: mw.user.tokens.get( "csrfToken" ),
                         text: newDelsortContent,
@@ -450,26 +464,20 @@
                 } ).done ( function ( data ) {
                     if ( data && data.edit && data.edit.result && data.edit.result == "Success" ) {
                         statusElement.html( "Listed page at <a href=" + mw.util.getUrl( listTitle ) + ">the " + cat + " deletion sorting list</a>!" );
-                        deferred.resolve();
                     } else {
                         statusElement.html( "While listing at DELSORT/" + cat + ", the edit query returned an error. =(" );
-                        deferred.reject();
                     }
                 } ).fail ( function() {
                     statusElement.html( "While listing at DELSORT/" + cat + ", the ajax request failed." );
-                    deferred.reject();
                 } );
             } catch ( e ) {
                 statusElement.html( "While getting the DELSORT/" + cat + " content, there was an error." );
                 console.log( "DELSORT content request error: " + e.message );
                 //console.log( "DELSORT content request response: " + JSON.stringify( data ) );
-                deferred.reject();
             }
         } ).fail( function () {
             statusElement.html( "While getting the DELSORT/" + cat + " content, there was an AJAX error." );
-            deferred.reject();
         } );
-        return deferred;
     }
 
     /**
@@ -483,12 +491,13 @@
                 action: "query",
                 prop: "revisions",
                 rvprop: "content",
+                rvslots: "main",
                 rvlimit: 1,
-                titles: title
+                titles: title,
+                formatversion: 2,
             }
         ).then( function ( data ) {
-            var pageId = Object.keys(data.query.pages)[0];
-            return data.query.pages[pageId].revisions[0]["*"];
+            return data.query.pages[0].revisions[0].slots.main.content;
         } );
     }
 
