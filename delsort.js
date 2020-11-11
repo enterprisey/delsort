@@ -119,7 +119,7 @@
                              } ) );
             };
 
-            $( "#jump-to-nav" ).after(
+            $( "#mw-content-text" ).prepend(
 '<div style="border: thin solid rgb(197, 197, 197); box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.25); border-radius: 3px; padding: 5px; position: relative;" id="delsort">' +
 '  <div id="delsort-title" style="font-size: larger; font-weight: bold; text-align: center;">Select a deletion sorting category</div>' +
 '  <table style="margin: 2em auto; border-collapse: collapse;" id="delsort-table">' +
