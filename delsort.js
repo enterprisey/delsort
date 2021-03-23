@@ -195,7 +195,7 @@
             // Initialize the special chosen.js select box
             // (some code stolen from http://stackoverflow.com/a/27445788)
             $( "#delsort select" ).chosen();
-            $( "#delsort .chzn-container" ).css( "text-align", "left" );
+            $( "#delsort .chosen-container" ).css( "text-align", "left" );
 
             // Add the button that triggers sorting
             $( "#delsort" ).append( $( "<div>" )
